@@ -1,7 +1,8 @@
 {
   "name": "discopop-gui",
 	"displayName": "discopop-gui",
-	"description": "",
+	"description": "A VS Code extension for the Parallelism Discovery tool DiscoPoP.",
+	"author": "Emir Azazi",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.68.0"
@@ -41,15 +42,15 @@
 		"configuration": {
 		  "title": "DiscoPoP",
 		  "properties": {
-			"discopop.path": {
+			"discopop.discopopPath": {
 			  "type": "string",
 			  "default": "",
-			  "description": "Path to your DiscoPoP installation. Please be sure the build and scripts folders exist. For more information regarding DiscoPoP please visit the [docs](https://github.com/discopop-project/discopop)."
+			  "description": "The path to your DiscoPoP installation. Please be sure the build and scripts folders exist. For more information regarding DiscoPoP please visit the [docs](https://github.com/discopop-project/discopop)."
 			},
 			"discopop.clangPath": {
 			  "type": "string",
 			  "default": "",
-			  "description": "The build path of clang."
+			  "description": "The build path to clang."
 			}
 		  }
 		},
