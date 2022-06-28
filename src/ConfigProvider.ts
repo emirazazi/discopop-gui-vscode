@@ -3,9 +3,14 @@ import * as vscode from 'vscode';
 
 export class ConfigProvider {
 
-    public static workspacePath: string = vscode.workspace.workspaceFolders[0].uri.fsPath;
+    public static getWorkspacePath = (): string => {
+        if (vscode.workspace.workspaceFolders) {
+            return vscode.workspace.workspaceFolders[0].uri.fsPath
+        }
+        return ""
+    };
 
-    public static discopopPath: string = vscode.workspace.getConfiguration("discopop").get("discopopPath");
+    public static discopopPath: string = vscode.workspace.getConfiguration("discopop")?.get("discopopPath");
 
     public static buildPath: string = vscode.workspace.getConfiguration("discopop").get("discopopPath") + "/build";
 
