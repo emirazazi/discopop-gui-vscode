@@ -19,7 +19,7 @@ export class DepProfiling extends TaskExecuter {
                 cwd: `${this.context.storageUri?.path}/results/${fileId}`
             }
 
-            const command1 = `${ConfigProvider.clangPath} -g -O0 -S -emit-llvm -fno-discard-value-names -Xclang -load -Xclang ${ConfigProvider.buildPath}/libi/LLVMDPInstrumentation.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o ${file.name}_dp.ll ${file.path}`;
+            const command1 = `${ConfigProvider.clangPath} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -S -emit-llvm -fno-discard-value-names -Xclang -load -Xclang ${ConfigProvider.buildPath}/libi/LLVMDPInstrumentation.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o dp_inst_${file.name}.ll ${file.path}`;
 
             exec(command1,  options, (err) => {
                 if (err) {
@@ -27,14 +27,16 @@ export class DepProfiling extends TaskExecuter {
                     return;
                 }
 
-                const command2 = `${ConfigProvider.clangPath} ${file.name}_dp.ll -o ${file.name}_dp_run -L${ConfigProvider.buildPath}/rtlib -lDiscoPoP_RT -lpthread`;
+                // todo reduce linkedFile to one single file
+                const command2 = `${ConfigProvider.clangPath} dp_inst_${file.name}.ll -o dp_run -L${ConfigProvider.buildPath}/rtlib -lDiscoPoP_RT -lpthread`;
                 exec(command2, options, (err) => {
                     if (err) {
                         console.log(`error: ${err.message}`);
                         return;
                     }
 
-                    const command3 = `./${file.name}_dp_run`;
+                    // todo just execute single ./dp_run
+                    const command3 = `./dp_run`;
                     exec(command3, options, (err) => {
                         if (err) {
                             console.log(`error: ${err.message}`);

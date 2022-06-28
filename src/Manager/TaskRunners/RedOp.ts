@@ -21,7 +21,7 @@ export class RedOp extends TaskExecuter {
 
             await mkdirp(options.cwd)
 
-            const command1 = `${ConfigProvider.clangPath} -g -O0 -S -emit-llvm -fno-discard-value-names -Xclang -load -Xclang ${ConfigProvider.buildPath}/libi/LLVMDPReduction.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o ${file.name}_red.bc ${file.path}`;
+            const command1 = `${ConfigProvider.clangPath} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -S -emit-llvm -fno-discard-value-names -Xclang -load -Xclang ${ConfigProvider.buildPath}/libi/LLVMDPReduction.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o dp_red_${file.name}.ll ${file.path}`;
 
             exec(command1,  options, (err) => {
                 if (err) {
@@ -29,7 +29,8 @@ export class RedOp extends TaskExecuter {
                     return;
                 }
 
-                const command2 = `${ConfigProvider.clangPath} ${file.name}_red.bc -o ${file.name}_dp_run_red -L${ConfigProvider.buildPath}/rtlib -lDiscoPoP_RT -lpthread`;
+                // tbh no clue rn but I think that should also be concatted in a way... maybe
+                const command2 = `${ConfigProvider.clangPath} dp_red_${file.name}.ll -o ${file.name}_dp_run_red -L${ConfigProvider.buildPath}/rtlib -lDiscoPoP_RT -lpthread`;
                 exec(command2, options, (err) => {
                     if (err) {
                         console.log(`error: ${err.message}`);

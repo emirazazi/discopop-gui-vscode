@@ -23,7 +23,7 @@ export class CUGen extends TaskExecuter {
 
             await mkdirp(options.cwd)
 
-            const executeString = `${ConfigProvider.clangPath} -g -O0 -fno-discard-value-names -Xclang -load -Xclang ${ConfigProvider.buildPath}/libi/LLVMCUGeneration.so -mllvm -fm-path -mllvm ../../FileMapping.txt -c ${file.path}`;
+            const executeString = `${ConfigProvider.clangPath} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -fno-discard-value-names -Xclang -load -Xclang ${ConfigProvider.buildPath}/libi/LLVMCUGeneration.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o dp_cu_${file.name}.ll ${file.path}`;
 
             // todo: exec appends CUs to an existing Data.xml... make sure that Data.xml is clear before running
             // check if fileKey can be written too

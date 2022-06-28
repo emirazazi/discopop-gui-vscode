@@ -13,8 +13,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   constructor(context: vscode.ExtensionContext) {
     this._extensionUri = context.extensionUri;
     this.context = context;
-    console.log(this._extensionUri)
-    console.log(this.context)
   }
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
@@ -84,8 +82,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     const styleVSCodeUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css")
     );
-    console.log(styleResetUri)
-    console.log("kkk")
 
     // Use a nonce to only allow a specific script to be run.
     const nonce = getNonce();

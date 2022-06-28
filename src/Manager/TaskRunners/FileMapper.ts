@@ -37,7 +37,7 @@ export class FileMapper {
         const options = {
             // this actually specifies folder where script saves > FileMapping.txt
             // maybe custom script which has folderPath as input?
-            cwd: ConfigProvider.workspacePath
+            cwd: ConfigProvider.getWorkspacePath()
         }
 
         // TODO avoid replacing to bash path style by using bash style in first place
@@ -48,7 +48,7 @@ export class FileMapper {
                 return;
             }
 
-            await sm.copyToStorage(ConfigProvider.workspacePath + '/FileMapping.txt', 'FileMapping.txt');
+            await sm.copyToStorage(ConfigProvider.getWorkspacePath() + '/FileMapping.txt', 'FileMapping.txt');
 
             // todo cleanup FileMapping.txt from workspacePath
 
