@@ -103,11 +103,29 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         
 			</head>
             <body>
-                <button class="execute-filemapping">Run Filemapping</button>
-                <button class="execute-cugen">Run CUGen</button>
-                <button class="execute-depprof">Run DepProf</button>
-                <button class="execute-redop">Run RedOp</button>
-                <button class="execute-patternid">Run PatternId</button>
+                <div>
+                  <div>
+                    <h3>Run File Mapping</h3>
+                    <button class="execute-filemapping">Run</button>
+                  </div>
+                  <div>
+                    <h3>Generate Computational Units</h3>
+                    <button class="execute-cugen">Run</button>
+                  </div>
+                  <div>
+                    <h3>Profile Data Dependencies</h3>
+                    <button class="execute-depprof">Run</button>
+                  </div>
+                  <div>
+                    <h3>Detect Reduction Patterns</h3>
+                    <button class="execute-redop">Run</button>
+                  </div>
+                  <div>
+                    <h3>Identify Parallel Patterns</h3>
+                    <button class="execute-patternid">Run</button>
+                  </div>    
+                </div>
+                
                 <script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
