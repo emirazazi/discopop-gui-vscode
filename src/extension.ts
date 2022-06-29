@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 import { CommandProvider } from './CommandProvider';
 import { CUGen } from './Manager/TaskRunners/CUGen';
 import { DepProfiling } from './Manager/TaskRunners/DepProfiling';
@@ -9,10 +10,14 @@ import { RedOp } from './Manager/TaskRunners/RedOp';
 import { StorageManager } from './misc/StorageManager';
 import { SidebarProvider } from './SidebarProvider';
 import { TreeDataProvider } from './TreeDataProvider';
+import Utils from './Utils';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+
+	vscode.commands.executeCommand(CommandProvider.initApplication)
+
 	// SIDEBAR
 	const sidebarProvider = new SidebarProvider(context);
 	context.subscriptions.push(
@@ -25,6 +30,15 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerTreeDataProvider("explorerId", treeDataProvider)
 	);
 
+	// INIT APPLICATION
+	context.subscriptions.push(vscode.commands.registerCommand(CommandProvider.initApplication, async () => {
+		if (fs.existsSync(`${Utils.hiddenStorage(context)}/FileMapping.txt`)) {
+			const localSM = new StorageManager(context);
+			let newFileMapping =  await localSM.readFile('FileMapping.txt', true) as string
+			treeDataProvider.reloadMapping(newFileMapping)
+			vscode.window.showInformationMessage("Loaded existing file mapping from storage!")
+		}
+	}))
 	// REFRESH TREE VIEW COMMAND
 	context.subscriptions.push(vscode.commands.registerCommand(CommandProvider.refreshFileMapping, async () => {
 		const localSM = new StorageManager(context);

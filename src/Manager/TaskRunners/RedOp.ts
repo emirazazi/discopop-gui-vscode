@@ -4,6 +4,7 @@ import { exec } from 'child_process';
 import { TaskExecuter } from "./TaskExecuter";
 import mkdirp = require('mkdirp');
 import * as fs from 'fs';
+import Utils from '../../Utils';
 
 export class RedOp extends TaskExecuter {
 
@@ -13,7 +14,7 @@ export class RedOp extends TaskExecuter {
 
     getOptions() {
         const options = {
-            cwd: `${this.context.storageUri?.path}/results`
+            cwd: `${Utils.hiddenStorage(this.context)}/results`
         }
         return options
     }

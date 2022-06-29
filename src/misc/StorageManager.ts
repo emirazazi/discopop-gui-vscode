@@ -2,12 +2,13 @@ import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
 import { PathLike } from 'fs';
 import * as vscode from 'vscode';
+import Utils from '../Utils';
 
 export class StorageManager {
     path: any;
 
     constructor(context: vscode.ExtensionContext, useWorkspace?: boolean) {
-        this.path = context.storageUri?.path;
+        this.path = Utils.hiddenStorage(context)
         if (useWorkspace) {
             this.path =  vscode.workspace.workspaceFolders[0].uri.path
         }

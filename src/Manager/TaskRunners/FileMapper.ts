@@ -4,6 +4,7 @@ import { ConfigProvider } from '../../ConfigProvider';
 import { StorageManager } from '../../misc/StorageManager';
 
 import {exec} from 'child_process';
+import { CommandProvider } from '../../CommandProvider';
 
 // saves files to hidden vscode storage
 export class FileMapper {
@@ -52,8 +53,7 @@ export class FileMapper {
 
             // todo cleanup FileMapping.txt from workspacePath
 
-            // externalize commands list in a seperate file
-            vscode.commands.executeCommand('discopop.refreshFileMapping')
+            vscode.commands.executeCommand(CommandProvider.refreshFileMapping)
 
 
             if (this.onDone) {

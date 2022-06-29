@@ -5,6 +5,7 @@ import { exec } from 'child_process';
 import { TaskExecuter } from "./TaskExecuter";
 import { StateManager } from '../StateManager';
 import mkdirp = require('mkdirp');
+import Utils from '../../Utils';
 
 export class CUGen extends TaskExecuter {
 
@@ -24,7 +25,7 @@ export class CUGen extends TaskExecuter {
             const fileId = file.id
             
             const options = {
-                cwd: `${this.context.storageUri?.path}/results/${fileId}`
+                cwd: `${Utils.hiddenStorage(this.context)}/results/${fileId}`
             }
 
             await mkdirp(options.cwd)

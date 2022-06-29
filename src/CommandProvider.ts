@@ -1,5 +1,7 @@
 export class CommandProvider {
 
+    public static initApplication: string = 'discopop.initApplication';
+    
     public static refreshFileMapping: string = 'discopop.refreshFileMapping';
 
     public static executeCUGen: string = 'discopop.executeCUGen';

@@ -4,6 +4,7 @@ import { ConfigProvider } from "../../ConfigProvider";
 import { exec } from 'child_process';
 import { TaskExecuter } from "./TaskExecuter";
 import mkdirp = require('mkdirp');
+import Utils from '../../Utils';
 
 export class DepProfiling extends TaskExecuter {
 
@@ -13,7 +14,7 @@ export class DepProfiling extends TaskExecuter {
 
     getOptions() {
         const options = {
-            cwd: `${this.context.storageUri?.path}/results`
+            cwd: `${Utils.hiddenStorage(this.context)}/results`
         }
         return options
     }

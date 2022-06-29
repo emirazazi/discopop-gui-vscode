@@ -3,6 +3,7 @@ import { ConfigProvider } from "../../ConfigProvider";
 import { exec } from 'child_process';
 import { TaskExecuter } from "./TaskExecuter";
 import mkdirp = require('mkdirp');
+import Utils from '../../Utils';
 
 export class PatternIdentification extends TaskExecuter {
 
@@ -16,12 +17,12 @@ export class PatternIdentification extends TaskExecuter {
             const fileId = file.id
             
             const options = {
-                cwd: `${this.context.storageUri?.path}/results/${fileId}`
+                cwd: `${Utils.hiddenStorage(this.context)}/results/${fileId}`
             }
 
             await mkdirp(options.cwd)
 
-            const command1 = `python3 -m discopop_explorer --path=${file.path} --dep-file=${file.name + '_dp_run'}_dep.txt --fmap=${this.context.storageUri?.path}/FileMapping.txt --json ${file.path}/patterns.json`;
+            const command1 = `python3 -m discopop_explorer --path=${file.path} --dep-file=${file.name + '_dp_run'}_dep.txt --fmap=${Utils.hiddenStorage(this.context)}/FileMapping.txt --json ${file.path}/patterns.json`;
 
             exec(command1, options, (err) => {
                 if (err) {
