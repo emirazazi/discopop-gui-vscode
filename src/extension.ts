@@ -44,6 +44,8 @@ export function activate(context: vscode.ExtensionContext) {
 		const depprofRunner = new DepProfiling(context);
 		depprofRunner.setFiles(treeDataProvider.getAllFiles())
 		await depprofRunner.executeDefault()
+		await depprofRunner.executeLinking()
+		await depprofRunner.executeDpRun()
 	}))
 
 	// EXECUTE RED OP
@@ -51,6 +53,8 @@ export function activate(context: vscode.ExtensionContext) {
 		const redopRunner = new RedOp(context);
 		redopRunner.setFiles(treeDataProvider.getAllFiles())
 		await redopRunner.executeDefault()
+		await redopRunner.linkInstrumentedLoops()
+		await redopRunner.executeDpRunRed()
 	}))
 
 	// EXECUTE PATTERN ID
