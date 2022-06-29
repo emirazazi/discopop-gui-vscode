@@ -12,6 +12,12 @@ export class CUGen extends TaskExecuter {
         super(context, onDone);
     }
 
+    clearDataXml(path): void {
+        if (fs.existsSync(path)) {
+            fs.unlinkSync(path)
+        }
+    }
+
     async executeDefault(options?: any | undefined): Promise<any> {
 
         return await Promise.all(this.files.map(async (file: any) => {
@@ -22,11 +28,10 @@ export class CUGen extends TaskExecuter {
             }
 
             await mkdirp(options.cwd)
+            
+            this.clearDataXml(`${options.cwd}/Data.xml`)
 
-            const executeString = `${ConfigProvider.clangPath} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -fno-discard-value-names -Xclang -load -Xclang ${ConfigProvider.buildPath}/libi/LLVMCUGeneration.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o dp_cu_${file.name}.ll ${file.path}`;
-
-            // todo: exec appends CUs to an existing Data.xml... make sure that Data.xml is clear before running
-            // check if fileKey can be written too
+            const executeString = `${ConfigProvider.clangPath} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -fno-discard-value-names -Xclang -load -Xclang ${ConfigProvider.buildPath}/libi/LLVMCUGeneration.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o dp_cu_${file.name}.ll -c ${file.path}`;
             
             exec(executeString,  options, (err, stdout, stderr) => {
                 if (err) {
@@ -44,14 +49,6 @@ export class CUGen extends TaskExecuter {
 
                         vscode.window.showInformationMessage("CUGen done for file: " + file.name)
                     }
-
-                    // if (fileId) {
-                    //     // this shit leads to complete restart of discopop when reopening app
-                    //     FileManager.getFile(fileId)?.updateDataXML(xmlString);
-                    //     // this is also COMPLETE garbage. Literally at every CUGen every fucking file is saved inside a config file
-                    //     // just use statemanager here to save the result???
-                    //     FileManager.writeToConfigFile();
-                    // }
                 }
 
                 // callback can be completly avoided... just await whole function and resolve with success
