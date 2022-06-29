@@ -3,6 +3,7 @@ import { ConfigProvider } from "../../ConfigProvider";
 import { exec } from 'child_process';
 import { TaskExecuter } from "./TaskExecuter";
 import mkdirp = require('mkdirp');
+import * as fs from 'fs';
 
 export class RedOp extends TaskExecuter {
 
@@ -10,22 +11,30 @@ export class RedOp extends TaskExecuter {
         super(context, onDone);
     }
 
-    getOptionsForFileId(fileId) {
+    getOptions() {
         const options = {
-            cwd: `${this.context.storageUri?.path}/results/${fileId}`
+            cwd: `${this.context.storageUri?.path}/results`
         }
         return options
+    }
+
+    workInFileFolder(fileId) {
+        let options = this.getOptions()
+        options.cwd = options.cwd + `/${fileId}`
+        return options
+    }
+
+    workInResultsFolder() {
+        return this.getOptions()
     }
 
     // (Command 5: Instrumenting loops with the LLVM pass which detects reduction pattern )
     async executeDefault(): Promise<any> {
 
-        return await Promise.all(this.files.map(async (file, index) => {
+        return await Promise.all(this.files.map(async (file) => {
             const fileId = file.id
 
-            const options = {
-                cwd: `${this.context.storageUri?.path}/results/${fileId}`
-            }
+            const options = this.workInFileFolder(fileId)
 
             await mkdirp(options.cwd)
 
@@ -47,16 +56,19 @@ export class RedOp extends TaskExecuter {
 
     // (Command 6: Linking the instrumented loops with DiscoPoP runtime libraries for the reduction detection)
     async linkInstrumentedLoops(): Promise<any> {
-        await Promise.all(this.files.map(async (file, index) => {
+        await Promise.all(this.files.map(async (file) => {
   
             const fileId = file.id
 
-            const options = this.getOptionsForFileId(fileId)
+            const options = this.workInResultsFolder()
 
             // $CLANG $bin_dir/${src_file}_red.bc -o dp_run_red -L${DISCOPOP_BUILD}/rtlib -lDiscoPoP_RT -lpthread
-            const command6 = `${ConfigProvider.clangPath} ./dp_red_${file.name}.ll -o dp_run_red -L${ConfigProvider.buildPath}/rtlib -lDiscoPoP_RT -lpthread`;
+            const command6 = `${ConfigProvider.clangPath} ./${fileId}/dp_red_${file.name}.ll -o dp_run_red -L${ConfigProvider.buildPath}/rtlib -lDiscoPoP_RT -lpthread`;
 
-            await exec(command6,  options, (err, stdout, stderr) => {
+            /* console.log(`${options.cwd}/${fileId}/dp_red_${file.name}.ll`)
+            console.log(fs.existsSync(`${options.cwd}/${fileId}/dp_red_${file.name}.ll`)) */
+
+            await exec(command6,  options, (err) => {
                 if (err) {
                     console.log(`error: ${err.message}`);
                     return;
@@ -68,24 +80,21 @@ export class RedOp extends TaskExecuter {
 
     // ((Command 7: executing the program which is instrumented to detect reduction pattern)
     async executeDpRunRed(): Promise<any> {
-        await Promise.all(this.files.map(async (file, index) => {
-  
-            const fileId = file.id
+        await new Promise(async () => {
+            const options = this.workInResultsFolder()
 
-            const options = this.getOptionsForFileId(fileId)
-
-            const command7 = `sudo ./dp_run_red`;
+            const command7 = `./dp_run_red`;
             exec(command7, options, (err) => {
                 if (err) {
                     console.log(`error: ${err.message}`);
                     return;
                 }
-                vscode.window.showInformationMessage("DepProf done for " + fileId)
+                vscode.window.showInformationMessage("Reduction done")
                 if (this.onDone) {
                     this.onDone(null, 2);
                 }
             });
-        }));
+        })
     }
 
     executeMakefile() {
