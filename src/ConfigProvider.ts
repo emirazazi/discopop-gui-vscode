@@ -19,4 +19,6 @@ export class ConfigProvider {
     public static clangPath: string = vscode.workspace.getConfiguration("discopop").get("clangPath");
 
     public static clangPlusPlusPath: string = vscode.workspace.getConfiguration("discopop").get("clangPlusPlusPath");
+
+    public static codeLensEnabled: boolean = vscode.workspace.getConfiguration("discopop").get("recommendationsCodeLens", true);
 }

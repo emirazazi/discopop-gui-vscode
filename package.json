@@ -56,10 +56,24 @@
 				"type": "string",
 				"default": "",
 				"description": "The build path to clang++."
-			  }
+			},
+			"discopop.recommendationsCodeLens": {
+				"type": "boolean",
+				"default": false
+			}
 		  }
 		},
 		"commands": [
+			{
+                "title": "Enable Recommendations CodeLens",
+                "command": "discopop.enableCodeLens",
+                "category": "DiscoPoP"
+            },
+            {
+                "title": "Disable Recommendations CodeLens",
+                "command": "discopop.disableCodeLens",
+                "category": "DiscoPoP"
+            }
 		]
 	  },
 	"scripts": {

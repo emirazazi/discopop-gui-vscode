@@ -11,9 +11,13 @@ import { StorageManager } from './misc/StorageManager';
 import { SidebarProvider } from './SidebarProvider';
 import { TreeDataProvider } from './TreeDataProvider';
 import Utils from './Utils';
+import RecommendationsCodeLensProvider from './RecommendationsCodeLensProvider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
+
+let disposables: vscode.Disposable[] = [];
+
 export function activate(context: vscode.ExtensionContext) {
 
 	vscode.commands.executeCommand(CommandProvider.initApplication)
@@ -29,6 +33,28 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.window.registerTreeDataProvider("explorerId", treeDataProvider)
 	);
+
+	// CODE LENS 
+	const codeLensProvider = new RecommendationsCodeLensProvider()
+	context.subscriptions.push(
+        vscode.languages.registerCodeLensProvider(
+            "*", //wildcard all for now
+			codeLensProvider));
+
+	context.subscriptions.push(vscode.commands.registerCommand("discopop.enableCodeLens", () => {
+		vscode.workspace.getConfiguration("discopop").update("recommendationsCodeLens", true, true);
+		})
+	)
+
+	context.subscriptions.push(vscode.commands.registerCommand("discopop.disableCodeLens", () => {
+		vscode.workspace.getConfiguration("discopop").update("recommendationsCodeLens", false, true);
+		})
+	)
+
+	context.subscriptions.push(vscode.commands.registerCommand("discopop.codelensAction", (args: any) => {
+		vscode.window.showInformationMessage(`CodeLens action clicked with args=${args}`);
+		})
+	)
 
 	// INIT APPLICATION
 	context.subscriptions.push(vscode.commands.registerCommand(CommandProvider.initApplication, async () => {
@@ -80,4 +106,9 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+	if (disposables) {
+        disposables.forEach(item => item.dispose());
+    }
+    disposables = [];
+}

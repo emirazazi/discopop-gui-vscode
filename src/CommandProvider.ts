@@ -11,4 +11,8 @@ export class CommandProvider {
     public static executeRedOp: string = 'discopop.executeRedOp';
 
     public static executePatternId: string = 'discopop.executePatternId';
+
+    public static enableCodeLens: string = 'discopop.enableCodeLens';
+
+    public static disableCodeLens: string = 'discopop.disableCodeLens';
 }
