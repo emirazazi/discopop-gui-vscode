@@ -42,20 +42,20 @@
 		"configuration": {
 		  "title": "DiscoPoP",
 		  "properties": {
-			"discopop.discopopPath": {
+			"discopop.discopopRoot": {
 			  "type": "string",
 			  "default": "",
 			  "description": "The path to your DiscoPoP installation. Please be sure the build and scripts folders exist. For more information regarding DiscoPoP please visit the [docs](https://github.com/discopop-project/discopop)."
 			},
-			"discopop.clangPath": {
+			"discopop.clang": {
 			  "type": "string",
 			  "default": "",
-			  "description": "The build path to clang."
+			  "description": "The build path to clang v8."
 			},
-			"discopop.clangPlusPlusPath": {
+			"discopop.clangPP": {
 				"type": "string",
 				"default": "",
-				"description": "The build path to clang++."
+				"description": "The build path to clang++ v8."
 			},
 			"discopop.recommendationsCodeLens": {
 				"type": "boolean",

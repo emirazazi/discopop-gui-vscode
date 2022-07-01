@@ -22,6 +22,9 @@ export class PatternIdentification extends TaskExecuter {
 
             await mkdirp(options.cwd)
 
+            // todo prepare analyzer 
+            // mv $HOME_DIR/discopop/$bin_dir/dp_run_dep.txt $HOME_DIR/discopop/
+            // mv $HOME_DIR/FileMapping.txt $HOME_DIR/discopop/
             const command1 = `python3 -m discopop_explorer --path=${file.path} --dep-file=${file.name + '_dp_run'}_dep.txt --fmap=${Utils.hiddenStorage(this.context)}/FileMapping.txt --json ${file.path}/patterns.json`;
 
             exec(command1, options, (err) => {

@@ -5,6 +5,7 @@ import { exec } from 'child_process';
 import { TaskExecuter } from "./TaskExecuter";
 import mkdirp = require('mkdirp');
 import Utils from '../../Utils';
+import { TreeItem } from '../../TreeDataProvider';
 
 export class DepProfiling extends TaskExecuter {
 
@@ -31,7 +32,13 @@ export class DepProfiling extends TaskExecuter {
 
     // (Command 2: Instrumenting memory access instructions in a input file)
     async executeDefault(): Promise<any> {
-        await Promise.all(this.files.map(async (file) => {
+        await Promise.all(this.files.map(async (file: TreeItem) => {
+            // todo copy header files to results folder
+
+            // fail first all header files
+            if (file.path.endsWith('.h')) {
+                return
+            }
   
             const fileId = file.id
 
@@ -43,7 +50,7 @@ export class DepProfiling extends TaskExecuter {
             // -Xclang -load -Xclang ${DISCOPOP_BUILD}/libi/LLVMDPInstrumentation.so \
             // -mllvm -fm-path -mllvm ./FileMapping.txt \
             // -I $include_dir -o${src_file}_dp.ll $src_file
-            const command2 = `${ConfigProvider.clangPath} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -S -emit-llvm -fno-discard-value-names -Xclang -load -Xclang ${ConfigProvider.buildPath}/libi/LLVMDPInstrumentation.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o dp_inst_${file.name}.ll -c ${file.path}`;
+            const command2 = `${ConfigProvider.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -S -emit-llvm -fno-discard-value-names -Xclang -load -Xclang ${ConfigProvider.discopopBuild}/libi/LLVMDPInstrumentation.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o dp_inst_${file.name}.ll -c ${file.path}`;
 
             await exec(command2,  options, (err) => {
                 if (err) {
@@ -57,14 +64,29 @@ export class DepProfiling extends TaskExecuter {
 
     // (Command 3: Linking instrumented code with DiscoPoP runtime libraries)
     async executeLinking(): Promise<any> {
-        await Promise.all(this.files.map(async (file) => {
-  
-            const fileId = file.id
+        const options = this.workInResultsFolder()
 
-            const options = this.workInResultsFolder()
+        // todo DRY
+        const llPaths = this.files.reduce(
+            (prev, curr) => {
+                if (curr.path.endsWith('.h')) {
+                    return prev
+                }
+                if (curr.id && curr.name) {
+                    const subpath = `${curr.id}/dp_inst_${curr.name}.ll`;
+                    if(fs.existsSync(`${options.cwd}/${subpath}`)) {
+                        const path = `./${subpath}`;
+                        return prev += " " + path
+                    }
+                }
+                return prev
+            },
+            ""
+        );
+        await new Promise(async () => {
 
             // $CLANG++ ${src_file}_dp.ll  -o dp_run -L${DISCOPOP_BUILD}/rtlib -lDiscoPoP_RT -lpthread
-            const command3 = `${ConfigProvider.clangPath} ./${fileId}/dp_inst_${file.name}.ll -o dp_run -L${ConfigProvider.buildPath}/rtlib -lDiscoPoP_RT -lpthread`;
+            const command3 = `${ConfigProvider.clangPP}${llPaths} -o dp_run -L${ConfigProvider.discopopBuild}/rtlib -lDiscoPoP_RT -lpthread`;
 
             await exec(command3,  options, (err) => {
                 if (err) {
@@ -73,7 +95,7 @@ export class DepProfiling extends TaskExecuter {
                 }
                 return;
             });
-        }));
+        });
     }
 
     // (Command 4: Executing the program to obtain data dependences)
@@ -87,7 +109,7 @@ export class DepProfiling extends TaskExecuter {
                     console.log(`error: ${err.message}`);
                     return;
                 }
-                vscode.window.showInformationMessage("DepProf done")
+                vscode.window.showInformationMessage("Profiler done")
                 if (this.onDone) {
                     this.onDone(null, 2);
                 }

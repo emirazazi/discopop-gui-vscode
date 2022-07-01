@@ -10,15 +10,15 @@ export class ConfigProvider {
         return ""
     };
 
-    public static discopopPath: string = vscode.workspace.getConfiguration("discopop")?.get("discopopPath");
+    public static discopopRoot: string = vscode.workspace.getConfiguration("discopop")?.get("discopopRoot");
 
-    public static buildPath: string = vscode.workspace.getConfiguration("discopop").get("discopopPath") + "/build";
+    public static discopopBuild: string = vscode.workspace.getConfiguration("discopop").get("discopopRoot") + "/build";
 
-    public static fileMapperPath: string = vscode.workspace.getConfiguration("discopop").get("discopopPath") + "/scripts/dp-fmap";
+    public static discopopFileMapper: string = vscode.workspace.getConfiguration("discopop").get("discopopRoot") + "/scripts/dp-fmap";
     
-    public static clangPath: string = vscode.workspace.getConfiguration("discopop").get("clangPath");
+    public static clang: string = vscode.workspace.getConfiguration("discopop").get("clang");
 
-    public static clangPlusPlusPath: string = vscode.workspace.getConfiguration("discopop").get("clangPlusPlusPath");
+    public static clangPP: string = vscode.workspace.getConfiguration("discopop").get("clangPP");
 
     public static codeLensEnabled: boolean = vscode.workspace.getConfiguration("discopop").get("recommendationsCodeLens", true);
 }

@@ -19,7 +19,7 @@ export class FileMapper {
 
     public async execute() {
         new Promise<void>((res, rej) => {
-            fs.stat(ConfigProvider.fileMapperPath, (err) => {
+            fs.stat(ConfigProvider.discopopFileMapper, (err) => {
                 // ERROR DP-FMAP NOT FOUND
                 if (err) {
                     console.log(`error: ${err.message}`);
@@ -32,7 +32,7 @@ export class FileMapper {
         });
 
         const sm = new StorageManager(this.context);
-        const fileMappingScriptPath = await sm.copyToStorage(ConfigProvider.fileMapperPath, 'dp-fmap');
+        const fileMappingScriptPath = await sm.copyToStorage(ConfigProvider.discopopFileMapper, 'dp-fmap');
 
 
         const options = {

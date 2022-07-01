@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { TreeItem } from '../../TreeDataProvider';
 
 export enum ExecutionModes {
     "default" = "DEFAULT",
@@ -11,7 +12,7 @@ export abstract class TaskExecuter {
     mode: ExecutionModes = ExecutionModes.default;
     onDone: Function;
 
-    files: any;
+    files: TreeItem[];
 
     re = new RegExp(/[^\\\/]+(?=\.[\w]+$)|[^\\\/]+$/g);
 
