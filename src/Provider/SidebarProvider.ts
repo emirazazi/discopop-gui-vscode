@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import { CommandProvider } from "./CommandProvider";
-import { getNonce } from "./getNonce";
-import { FileMapper } from "./Manager/TaskRunners/FileMapper";
+import { Commands } from "../Commands";
+import { FileMapper } from "../TaskRunners/FileMapper";
+import Utils from "../Utils";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -49,19 +49,19 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           break;
         }
         case "executeCUGen": {
-          vscode.commands.executeCommand(CommandProvider.executeCUGen)
+          vscode.commands.executeCommand(Commands.executeCUGen)
           break;
         }
         case "executeDepProf": {
-          vscode.commands.executeCommand(CommandProvider.executeDepProf)
+          vscode.commands.executeCommand(Commands.executeDepProf)
           break;
         }
         case "executeRedOp": {
-          vscode.commands.executeCommand(CommandProvider.executeRedOp)
+          vscode.commands.executeCommand(Commands.executeRedOp)
           break;
         }
         case "executePatterinId": {
-          vscode.commands.executeCommand(CommandProvider.executePatternId)
+          vscode.commands.executeCommand(Commands.executePatternId)
           break;
         }
       }
@@ -84,7 +84,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     );
 
     // Use a nonce to only allow a specific script to be run.
-    const nonce = getNonce();
+    const nonce = Utils.getNonce();
 
     return `<!DOCTYPE html>
 			<html lang="en">

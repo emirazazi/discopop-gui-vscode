@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
-import { ConfigProvider } from "../../ConfigProvider";
+import { Config } from "../Config";
 import { exec } from 'child_process';
 import { TaskExecuter } from "./TaskExecuter";
 import mkdirp = require('mkdirp');
-import Utils from '../../Utils';
+import Utils from '../Utils';
 
 export class PatternIdentification extends TaskExecuter {
 

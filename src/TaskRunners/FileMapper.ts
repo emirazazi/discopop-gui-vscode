@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { ConfigProvider } from '../../ConfigProvider';
-import { StorageManager } from '../../misc/StorageManager';
+import { Config } from '../Config';
+import { StorageManager } from '../misc/StorageManager';
 
 import {exec} from 'child_process';
-import { CommandProvider } from '../../CommandProvider';
+import { Commands } from '../Commands';
 
 // saves files to hidden vscode storage
 export class FileMapper {
@@ -19,7 +19,7 @@ export class FileMapper {
 
     public async execute() {
         new Promise<void>((res, rej) => {
-            fs.stat(ConfigProvider.discopopFileMapper, (err) => {
+            fs.stat(Config.discopopFileMapper, (err) => {
                 // ERROR DP-FMAP NOT FOUND
                 if (err) {
                     console.log(`error: ${err.message}`);
@@ -32,13 +32,13 @@ export class FileMapper {
         });
 
         const sm = new StorageManager(this.context);
-        const fileMappingScriptPath = await sm.copyToStorage(ConfigProvider.discopopFileMapper, 'dp-fmap');
+        const fileMappingScriptPath = await sm.copyToStorage(Config.discopopFileMapper, 'dp-fmap');
 
 
         const options = {
             // this actually specifies folder where script saves > FileMapping.txt
             // maybe custom script which has folderPath as input?
-            cwd: ConfigProvider.getWorkspacePath()
+            cwd: Config.getWorkspacePath()
         }
 
         // TODO avoid replacing to bash path style by using bash style in first place
@@ -49,11 +49,11 @@ export class FileMapper {
                 return;
             }
 
-            await sm.copyToStorage(ConfigProvider.getWorkspacePath() + '/FileMapping.txt', 'FileMapping.txt');
+            await sm.copyToStorage(Config.getWorkspacePath() + '/FileMapping.txt', 'FileMapping.txt');
 
             // todo cleanup FileMapping.txt from workspacePath
 
-            vscode.commands.executeCommand(CommandProvider.refreshFileMapping)
+            vscode.commands.executeCommand(Commands.refreshFileMapping)
 
 
             if (this.onDone) {

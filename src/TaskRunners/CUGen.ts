@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { ConfigProvider } from "../../ConfigProvider";
+import { Config } from "../Config";
 import { exec } from 'child_process';
 import { TaskExecuter } from "./TaskExecuter";
-import { StateManager } from '../StateManager';
+import { StateManager } from '../misc/StateManager';
 import mkdirp = require('mkdirp');
-import Utils from '../../Utils';
-import { TreeItem } from '../../TreeDataProvider';
+import Utils from '../Utils';
+import { TreeItem } from '../Provider/TreeDataProvider';
 
 export class CUGen extends TaskExecuter {
 
@@ -37,7 +37,7 @@ export class CUGen extends TaskExecuter {
             
             this.clearDataXml(`${options.cwd}/Data.xml`)
 
-            const executeString = `${ConfigProvider.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -fno-discard-value-names -Xclang -load -Xclang ${ConfigProvider.discopopBuild}/libi/LLVMCUGeneration.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o dp_cu_${file.name}.ll -c ${file.path}`;
+            const executeString = `${Config.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -fno-discard-value-names -Xclang -load -Xclang ${Config.discopopBuild}/libi/LLVMCUGeneration.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o dp_cu_${file.name}.ll -c ${file.path}`;
             
             exec(executeString,  options, (err, stdout, stderr) => {
                 if (err) {

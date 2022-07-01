@@ -2,16 +2,16 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { CommandProvider } from './CommandProvider';
-import { CUGen } from './Manager/TaskRunners/CUGen';
-import { DepProfiling } from './Manager/TaskRunners/DepProfiling';
-import { PatternIdentification } from './Manager/TaskRunners/PatternIdentification';
-import { RedOp } from './Manager/TaskRunners/RedOp';
+import { Commands } from './Commands';
+import { CUGen } from './TaskRunners/CUGen';
+import { DepProfiling } from './TaskRunners/DepProfiling';
+import { PatternIdentification } from './TaskRunners/PatternIdentification';
+import { RedOp } from './TaskRunners/RedOp';
 import { StorageManager } from './misc/StorageManager';
-import { SidebarProvider } from './SidebarProvider';
-import { TreeDataProvider } from './TreeDataProvider';
+import { SidebarProvider } from './Provider/SidebarProvider';
+import { TreeDataProvider } from './Provider/TreeDataProvider';
 import Utils from './Utils';
-import RecommendationsCodeLensProvider from './RecommendationsCodeLensProvider';
+import RecommendationsCodeLensProvider from './Provider/RecommendationsCodeLensProvider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -20,7 +20,7 @@ let disposables: vscode.Disposable[] = [];
 
 export function activate(context: vscode.ExtensionContext) {
 
-	vscode.commands.executeCommand(CommandProvider.initApplication)
+	vscode.commands.executeCommand(Commands.initApplication)
 
 	// SIDEBAR
 	const sidebarProvider = new SidebarProvider(context);
@@ -57,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
 	) */
 
 	// INIT APPLICATION
-	context.subscriptions.push(vscode.commands.registerCommand(CommandProvider.initApplication, async () => {
+	context.subscriptions.push(vscode.commands.registerCommand(Commands.initApplication, async () => {
 		if (fs.existsSync(`${Utils.hiddenStorage(context)}/FileMapping.txt`)) {
 			const localSM = new StorageManager(context);
 			let newFileMapping =  await localSM.readFile('FileMapping.txt', true) as string
@@ -66,21 +66,21 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}))
 	// REFRESH TREE VIEW COMMAND
-	context.subscriptions.push(vscode.commands.registerCommand(CommandProvider.refreshFileMapping, async () => {
+	context.subscriptions.push(vscode.commands.registerCommand(Commands.refreshFileMapping, async () => {
 		const localSM = new StorageManager(context);
 		let newFileMapping =  await localSM.readFile('FileMapping.txt', true) as string
 		treeDataProvider.reloadMapping(newFileMapping)
 	}))
 
 	// EXECUTE CU GEN
-	context.subscriptions.push(vscode.commands.registerCommand(CommandProvider.executeCUGen, async () => {
+	context.subscriptions.push(vscode.commands.registerCommand(Commands.executeCUGen, async () => {
 		const cugenRunner = new CUGen(context)
 		cugenRunner.setFiles(treeDataProvider.getAllFiles())
 		await cugenRunner.executeDefault()
 	}))
 
 	// EXECUTE DEP PROF
-	context.subscriptions.push(vscode.commands.registerCommand(CommandProvider.executeDepProf, async () => {
+	context.subscriptions.push(vscode.commands.registerCommand(Commands.executeDepProf, async () => {
 		const depprofRunner = new DepProfiling(context);
 		depprofRunner.setFiles(treeDataProvider.getAllFiles())
 		await depprofRunner.executeDefault()
@@ -89,7 +89,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}))
 
 	// EXECUTE RED OP
-	context.subscriptions.push(vscode.commands.registerCommand(CommandProvider.executeRedOp, async () => {
+	context.subscriptions.push(vscode.commands.registerCommand(Commands.executeRedOp, async () => {
 		const redopRunner = new RedOp(context);
 		redopRunner.setFiles(treeDataProvider.getAllFiles())
 		await redopRunner.executeDefault()
@@ -98,7 +98,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}))
 
 	// EXECUTE PATTERN ID
-	context.subscriptions.push(vscode.commands.registerCommand(CommandProvider.executePatternId, async () => {
+	context.subscriptions.push(vscode.commands.registerCommand(Commands.executePatternId, async () => {
 		const patternidRunner = new PatternIdentification(context);
 		patternidRunner.setFiles(treeDataProvider.getAllFiles())
 		await patternidRunner.executeDefault()

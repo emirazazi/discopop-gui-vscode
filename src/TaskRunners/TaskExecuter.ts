@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { TreeItem } from '../../TreeDataProvider';
+import { TreeItem } from '../Provider/TreeDataProvider';
 
 export enum ExecutionModes {
     "default" = "DEFAULT",

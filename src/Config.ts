@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 
-export class ConfigProvider {
+export class Config {
 
     public static getWorkspacePath = (): string => {
         if (vscode.workspace.workspaceFolders) {

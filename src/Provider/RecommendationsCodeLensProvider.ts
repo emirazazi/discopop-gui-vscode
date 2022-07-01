@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { CancellationToken, CodeLens, Command, Range, TextDocument } from 'vscode';
-import { ConfigProvider } from './ConfigProvider';
+import { Config } from '../Config';
 
 export default class RecommendationsCodeLensProvider implements vscode.CodeLensProvider {
     private codeLenses: vscode.CodeLens[] = [];
@@ -18,7 +18,7 @@ export default class RecommendationsCodeLensProvider implements vscode.CodeLensP
 
     public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
 
-        if (ConfigProvider.codeLensEnabled) {
+        if (Config.codeLensEnabled) {
             this.codeLenses = [];
             const regex = new RegExp(this.regex);
             const text = document.getText();
@@ -38,7 +38,7 @@ export default class RecommendationsCodeLensProvider implements vscode.CodeLensP
     }
 
     public resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken) {
-        if (ConfigProvider.codeLensEnabled) {
+        if (Config.codeLensEnabled) {
             codeLens.command = {
                 title: "Codelens provided by sample extension",
                 tooltip: "Tooltip provided by sample extension",

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { TreeItemLabel, Uri, Command } from 'vscode';
-import parseMappingToTree, { getPathById, removeAbsoluteSubpath } from './Manager/FileMappingParser';
+import parseMappingToTree, { getPathById, removeAbsoluteSubpath } from '../misc/FileMappingParser';
 
 enum NodeType {
   path = "PATH",

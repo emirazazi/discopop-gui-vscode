@@ -1,4 +1,4 @@
-export class CommandProvider {
+export class Commands {
 
     public static initApplication: string = 'discopop.initApplication';
     

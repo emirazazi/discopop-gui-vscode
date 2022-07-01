@@ -1,6 +1,6 @@
 import path = require('path');
 import * as vscode from 'vscode';
-import { TreeItem } from '../TreeDataProvider';
+import { TreeItem } from '../Provider/TreeDataProvider';
 
 function createNode(tree: TreeItem[], filePath: string[], id: string) {
     let label = filePath.shift();
