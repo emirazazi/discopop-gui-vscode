@@ -12,6 +12,7 @@ import { SidebarProvider } from './Provider/SidebarProvider';
 import { TreeDataProvider } from './Provider/TreeDataProvider';
 import Utils from './Utils';
 import RecommendationsCodeLensProvider from './Provider/RecommendationsCodeLensProvider';
+import { StateManager } from './misc/StateManager';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -58,18 +59,19 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// INIT APPLICATION
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.initApplication, async () => {
-		if (fs.existsSync(`${Utils.hiddenStorage(context)}/FileMapping.txt`)) {
-			const localSM = new StorageManager(context);
-			let newFileMapping =  await localSM.readFile('FileMapping.txt', true) as string
-			treeDataProvider.reloadMapping(newFileMapping)
-			vscode.window.showInformationMessage("Loaded existing file mapping from storage!")
-		}
+		vscode.commands.executeCommand(Commands.refreshFileMapping)
 	}))
+
 	// REFRESH TREE VIEW COMMAND
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.refreshFileMapping, async () => {
-		const localSM = new StorageManager(context);
-		let newFileMapping =  await localSM.readFile('FileMapping.txt', true) as string
-		treeDataProvider.reloadMapping(newFileMapping)
+		if (fs.existsSync(`${Utils.hiddenStorage(context)}/FileMapping.txt`)) {
+			const localSM = new StorageManager(context);
+			const newFileMapping =  await localSM.readFile('FileMapping.txt', true) as string
+	
+			const stateManager = new StateManager(context);
+			stateManager.save("fileMapping", newFileMapping);
+			treeDataProvider.reloadFileMappingFromState();
+		}
 	}))
 
 	// EXECUTE CU GEN

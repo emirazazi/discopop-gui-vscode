@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { TreeItemLabel, Uri, Command } from 'vscode';
 import parseMappingToTree, { getPathById, removeAbsoluteSubpath } from '../misc/FileMappingParser';
+import { StateManager } from '../misc/StateManager';
 
 enum NodeType {
   path = "PATH",
@@ -98,9 +99,25 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 
 
 
-  public reloadMapping(fileMapping: string) {
+  public setFileMapping(fileMapping: string) {
     this.data = parseMappingToTree(fileMapping)
     this._onDidChangeTreeData.fire();
+  }
+
+  public reloadFileMappingFromState(): boolean {
+    if (!this._context) { 
+      return false
+    }
+
+    const stateManager = new StateManager(this._context);
+
+    const fileMappingString = stateManager.read("fileMapping");
+
+    if (!fileMappingString || fileMappingString === "") {
+      return false
+    }
+
+    this.setFileMapping(fileMappingString)
   }
 }
 

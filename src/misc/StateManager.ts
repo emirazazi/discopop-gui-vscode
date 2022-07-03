@@ -14,7 +14,7 @@ export class StateManager{
         return this.context.workspaceState.update(entry, value);
     }
 
-    read(entry: string) {
+    read(entry: string): any {
         return this.context.workspaceState.get(entry);
     }
 
@@ -23,7 +23,6 @@ export class StateManager{
             this.context.workspaceState.update(key, value);
         });
     }
-
 
     static getXmlEntryNameForFile(fileId) {
         return "xmlstring" + fileId;
