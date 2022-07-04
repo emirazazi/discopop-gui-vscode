@@ -13,7 +13,11 @@ function createNode(tree: TreeItem[], filePath: string[], id: string) {
         tree.push({
             label: label,
             children: [],
-            collapsibleState: filePath.length === 0 ? 1 : 2,
+            // 0 no children
+            // 1 collapsed
+            // 2 expanded
+            // give 0 on init and if we have results for a file set to either 1 or 2
+            collapsibleState: filePath.length === 0 ? 0 : 2,
             id: filePath.length === 0 ? id : undefined,
             name: filePath.length === 0 ? getFileName(label) : undefined
         });
