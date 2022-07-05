@@ -19,7 +19,7 @@
 		  "activitybar": [
 			{
 			  "id": "discopop-sidebar-view",
-			  "title": "SidebarView",
+			  "title": "DiscoPoP",
 			  "icon": "media/parallel.svg"
 			}
 		  ]
@@ -64,6 +64,31 @@
 		  }
 		},
 		"commands": [
+			{
+				"title": "Run File Mapping",
+				"command": "discopop.refreshFileMapping",
+				"category": "DiscoPoP"
+			},
+			{
+				"title": "Generate Computational Units",
+				"command": "discopop.executeCUGen",
+				"category": "DiscoPoP"
+			},
+			{
+				"title": "Profile Data Dependencies",
+				"command": "discopop.executeDepProf",
+				"category": "DiscoPoP"
+			},
+			{
+				"title": "Detect Reduction Patterns",
+				"command": "discopop.executeRedOp",
+				"category": "DiscoPoP"
+			},
+			{
+				"title": "Identify Parallel Patterns",
+				"command": "discopop.executePatternId",
+				"category": "DiscoPoP"
+			},
 			{
                 "title": "Enable Recommendations CodeLens",
                 "command": "discopop.enableCodeLens",
