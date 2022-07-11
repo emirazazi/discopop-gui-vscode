@@ -87,6 +87,5 @@ export function getPathById(tree: TreeItem[], id: string, path: string) {
 export function removeAbsoluteSubpath(path: string) {
     // /a/b/c/workingDirectory/d/e/f -> d/e/f
     const workspacePath = Config.getWorkspacePath();
-    console.log(workspacePath)
     return path.replace(workspacePath + "/", '');
 }
