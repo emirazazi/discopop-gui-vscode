@@ -10,6 +10,18 @@ export class Config {
         return ""
     };
 
+    public static getRootLabel = () => {
+        const workspacePath = this.getWorkspacePath()
+
+        const pathParts = workspacePath.split('/');
+
+        if(!pathParts.length) {
+            return ''
+        }
+
+        return pathParts[pathParts.length - 1];
+    }
+
     public static discopopRoot: string = vscode.workspace.getConfiguration("discopop")?.get("discopopRoot");
 
     public static discopopBuild: string = vscode.workspace.getConfiguration("discopop").get("discopopRoot") + "/build";

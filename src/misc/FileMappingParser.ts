@@ -1,6 +1,8 @@
 import path = require('path');
 import * as vscode from 'vscode';
-import { TreeItem } from '../Provider/TreeDataProvider';
+import { TreeItemCollapsibleState } from 'vscode';
+import { Config } from '../Config';
+import { ItemType, TreeItem } from '../Provider/TreeDataProvider';
 
 function createNode(tree: TreeItem[], filePath: string[], id: string) {
     let label = filePath.shift();
@@ -10,6 +12,7 @@ function createNode(tree: TreeItem[], filePath: string[], id: string) {
 
     if(idx < 0) {
         // todo handle root workspace. Meaning put all root elements in one node
+        const isFile = filePath.length === 0;
         tree.push({
             active: false,
             label: label,
@@ -18,9 +21,11 @@ function createNode(tree: TreeItem[], filePath: string[], id: string) {
             // 1 collapsed
             // 2 expanded
             // give 0 on init and if we have results for a file set to either 1 or 2
-            collapsibleState: filePath.length === 0 ? 0 : 2,
-            id: filePath.length === 0 ? id : undefined,
-            name: filePath.length === 0 ? getFileName(label) : undefined
+            collapsibleState: isFile ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Expanded,
+            id: isFile ? id : undefined,
+            isFile: isFile,
+            contextValue: isFile ? ItemType.File : ItemType.Folder,
+            name: isFile ? getFileName(label) : undefined
         });
         if (filePath.length !== 0) {
             createNode(tree[tree.length-1].children, filePath, id);
@@ -34,7 +39,7 @@ function getFileName(label: string) {
     return path.parse(label).name
 }
 
-export default function parseMappingToTree(fileMapping: string): any {
+export default function parseMappingToTree(fileMapping: string): TreeItem {
     const lines = fileMapping.split("\n").filter((line) => line !== "");
 
     let tree: TreeItem[] = [];
@@ -49,7 +54,12 @@ export default function parseMappingToTree(fileMapping: string): any {
         createNode(tree, split, id);
     });
 
-    return tree;
+
+    let root = new TreeItem(Config.getRootLabel(), tree);
+    root.collapsibleState = TreeItemCollapsibleState.Expanded;
+    root.contextValue = ItemType.Folder;
+
+    return root;
 }
 
 // UTILS
@@ -76,6 +86,7 @@ export function getPathById(tree: TreeItem[], id: string, path: string) {
 
 export function removeAbsoluteSubpath(path: string) {
     // /a/b/c/workingDirectory/d/e/f -> d/e/f
-    const workspacePath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+    const workspacePath = Config.getWorkspacePath();
+    console.log(workspacePath)
     return path.replace(workspacePath + "/", '');
 }

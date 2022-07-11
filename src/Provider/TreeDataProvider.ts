@@ -1,21 +1,19 @@
+import { RootHookObject } from 'mocha';
 import * as vscode from 'vscode';
 import { TreeItemLabel, Uri, Command } from 'vscode';
 import parseMappingToTree, { getPathById, removeAbsoluteSubpath } from '../misc/FileMappingParser';
 import { StateManager } from '../misc/StateManager';
 
-enum NodeType {
-  path = "PATH",
-  file = "FILE",
-  // TODO more specific discopop results
-  discopopResult = "DISCO",
+export enum ItemType {
+  File = 'file',
+  Folder = 'folder'
 }
 
 // custom node type for internal usage
 interface NodeItem {
-  id: string;
+  id?: string;
   fsPath?: string;
-  isFolder?: boolean; // if node.id -> isFolder
-  nodeType?: NodeType;
+  isFile: boolean;
   resourceUri?: Uri;
   line?: number;
   column?: number;
@@ -24,17 +22,14 @@ interface NodeItem {
 export class TreeItem extends vscode.TreeItem implements NodeItem {
   children: TreeItem[]|undefined;
   id: string;
+  isFile: boolean;
   path?: string;
   name?: string;
-
   active: boolean;
   
   constructor(label: string, children?: TreeItem[]) {
     super(
-        label,
-        /* vscode.TreeItemCollapsibleState.Expanded) */
-        /* children === undefined ? vscode.TreeItemCollapsibleState.None :
-                                  vscode.TreeItemCollapsibleState.Expanded); */
+        label
     )
     this.children = children;
     }
@@ -44,7 +39,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
   private _onDidChangeTreeData: vscode.EventEmitter<TreeItem | undefined | null | void> = new vscode.EventEmitter<TreeItem | undefined | null | void>();
   readonly onDidChangeTreeData: vscode.Event<TreeItem | undefined | null | void> = this._onDidChangeTreeData.event;
 
-  data: TreeItem[] | undefined;
+  data: TreeItem;
 
   private _context: vscode.ExtensionContext;
   private _workspaceRoot: string | undefined;
@@ -72,7 +67,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     }
     if (element === undefined) {
       // display full results
-      return this.data;
+      return [this.data];
     }
     return element.children;
   }
@@ -81,7 +76,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     if (node.id && node.active) {
       arr.push({
         id: node.id,
-        path: getPathById(this.data, node.id, root),
+        path: getPathById(this.data.children, node.id, root),
         name: node.name
       })
     }
@@ -94,18 +89,32 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
   public getActiveFiles() {
     let root = vscode.workspace.workspaceFolders[0].uri.fsPath
     let res = []
-    this.data.map((node) => this.filterActiveFiles(node, root, res))
+    this.data.children.map((node) => this.filterActiveFiles(node, root, res))
 
     return res
   }
 
-  public toggleEntry(entry: TreeItem) {
-    const existingItem = this.data.find((elem) => elem === entry); 
+  public toggleEntry(item: TreeItem) {
+    const existingItem = this.getChildById(this.data, item.id);
     if (!existingItem) {
       vscode.window.showErrorMessage('Could not toggle entry. Not found');
     }
 
     existingItem.active = !existingItem.active;
+  }
+
+  public getChildById(root: TreeItem, id: string) {
+
+    if(root.id === id) {
+      return root;
+    }
+
+    for(let i = 0; i < root.children.length; i++) {
+      const found = this.getChildById(root.children[i], id)
+      if(found) {
+        return found
+      }
+    }
   }
 
   public setFileMapping(fileMapping: string) {

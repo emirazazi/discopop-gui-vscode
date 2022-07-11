@@ -112,7 +112,7 @@
 			"view/item/context": [
 				{
 					"command": "discopop.toggleEntry",
-					"when": "view == discopop-view && viewItem=entry",
+					"when": "view == explorerId && viewItem==file",
 					"group": "inline"
 				  }
 			]
