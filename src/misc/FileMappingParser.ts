@@ -11,6 +11,7 @@ function createNode(tree: TreeItem[], filePath: string[], id: string) {
     if(idx < 0) {
         // todo handle root workspace. Meaning put all root elements in one node
         tree.push({
+            active: false,
             label: label,
             children: [],
             // 0 no children

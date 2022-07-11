@@ -9,7 +9,7 @@ import { PatternIdentification } from './TaskRunners/PatternIdentification';
 import { RedOp } from './TaskRunners/RedOp';
 import { StorageManager } from './misc/StorageManager';
 import { SidebarProvider } from './Provider/SidebarProvider';
-import { TreeDataProvider } from './Provider/TreeDataProvider';
+import { TreeDataProvider, TreeItem } from './Provider/TreeDataProvider';
 import Utils from './Utils';
 import RecommendationsCodeLensProvider from './Provider/RecommendationsCodeLensProvider';
 import { StateManager } from './misc/StateManager';
@@ -34,6 +34,12 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.window.registerTreeDataProvider("explorerId", treeDataProvider)
 	);
+
+	// TOGGLE TREE VIEW ENTRY
+	
+	context.subscriptions.push(vscode.commands.registerCommand(Commands.toggleEntry, (entry: TreeItem) => {
+		treeDataProvider.toggleEntry(entry);
+	}));
 
 	// CODE LENS 
 	/* const codeLensProvider = new RecommendationsCodeLensProvider()
@@ -77,14 +83,14 @@ export function activate(context: vscode.ExtensionContext) {
 	// EXECUTE CU GEN
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.executeCUGen, async () => {
 		const cugenRunner = new CUGen(context)
-		cugenRunner.setFiles(treeDataProvider.getAllFiles())
+		cugenRunner.setFiles(treeDataProvider.getActiveFiles())
 		await cugenRunner.executeDefault()
 	}))
 
 	// EXECUTE DEP PROF
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.executeDepProf, async () => {
 		const depprofRunner = new DepProfiling(context);
-		depprofRunner.setFiles(treeDataProvider.getAllFiles())
+		depprofRunner.setFiles(treeDataProvider.getActiveFiles())
 		await depprofRunner.executeDefault()
 		await depprofRunner.executeLinking()
 		await depprofRunner.executeDpRun()
@@ -93,7 +99,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// EXECUTE RED OP
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.executeRedOp, async () => {
 		const redopRunner = new RedOp(context);
-		redopRunner.setFiles(treeDataProvider.getAllFiles())
+		redopRunner.setFiles(treeDataProvider.getActiveFiles())
 		await redopRunner.executeDefault()
 		await redopRunner.linkInstrumentedLoops()
 		await redopRunner.executeDpRunRed()
@@ -102,7 +108,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// EXECUTE PATTERN ID
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.executePatternId, async () => {
 		const patternidRunner = new PatternIdentification(context);
-		patternidRunner.setFiles(treeDataProvider.getAllFiles())
+		patternidRunner.setFiles(treeDataProvider.getActiveFiles())
 		await patternidRunner.executeDefault()
 	}))
 }

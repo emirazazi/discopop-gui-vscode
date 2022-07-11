@@ -90,6 +90,14 @@
 				"category": "DiscoPoP"
 			},
 			{
+				"command": "discopop.toggleEntry",
+				"title": "Edit",
+				"icon": {
+				  "light": "media/parallel.svg",
+				  "dark": "media/parallel.svg"
+				}
+			  },
+			{
                 "title": "Enable Recommendations CodeLens",
                 "command": "discopop.enableCodeLens",
                 "category": "DiscoPoP"
@@ -99,7 +107,16 @@
                 "command": "discopop.disableCodeLens",
                 "category": "DiscoPoP"
             }
-		]
+		],
+		"menus": {
+			"view/item/context": [
+				{
+					"command": "discopop.toggleEntry",
+					"when": "view == discopop-view && viewItem=entry",
+					"group": "inline"
+				  }
+			]
+		}
 	  },
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

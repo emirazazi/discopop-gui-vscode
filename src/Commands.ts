@@ -12,6 +12,8 @@ export class Commands {
 
     public static executePatternId: string = 'discopop.executePatternId';
 
+    public static toggleEntry: string = 'discopop.toggleEntry';
+
     public static enableCodeLens: string = 'discopop.enableCodeLens';
 
     public static disableCodeLens: string = 'discopop.disableCodeLens';

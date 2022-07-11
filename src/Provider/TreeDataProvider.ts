@@ -26,6 +26,8 @@ export class TreeItem extends vscode.TreeItem implements NodeItem {
   id: string;
   path?: string;
   name?: string;
+
+  active: boolean;
   
   constructor(label: string, children?: TreeItem[]) {
     super(
@@ -75,8 +77,8 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     return element.children;
   }
 
-  public filterFiles(node, root, arr) {
-    if (node.id) {
+  public filterActiveFiles(node, root, arr) {
+    if (node.id && node.active) {
       arr.push({
         id: node.id,
         path: getPathById(this.data, node.id, root),
@@ -84,20 +86,27 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
       })
     }
     if (node.children) {
-      node.children.map((children) => this.filterFiles(children, root, arr))
+      node.children.map((children) => this.filterActiveFiles(children, root, arr))
     }
     return
   }
 
-  public getAllFiles() {
+  public getActiveFiles() {
     let root = vscode.workspace.workspaceFolders[0].uri.fsPath
     let res = []
-    this.data.map((node) => this.filterFiles(node, root, res))
+    this.data.map((node) => this.filterActiveFiles(node, root, res))
 
     return res
   }
 
+  public toggleEntry(entry: TreeItem) {
+    const existingItem = this.data.find((elem) => elem === entry); 
+    if (!existingItem) {
+      vscode.window.showErrorMessage('Could not toggle entry. Not found');
+    }
 
+    existingItem.active = !existingItem.active;
+  }
 
   public setFileMapping(fileMapping: string) {
     this.data = parseMappingToTree(fileMapping)
