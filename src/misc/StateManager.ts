@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-export class StateManager{
+export class StateManager {
 
     // StateManager working with Memento API for workspacewide state
 
@@ -22,9 +22,5 @@ export class StateManager{
         Object.keys(object).map((key, value) => {
             this.context.workspaceState.update(key, value);
         });
-    }
-
-    static getXmlEntryNameForFile(fileId) {
-        return "xmlstring" + fileId;
     }
 }

@@ -15,19 +15,9 @@ export class DepProfiling extends TaskExecuter {
 
     getOptions() {
         const options = {
-            cwd: `${Utils.hiddenStorage(this.context)}/results`
+            cwd: Utils.hiddenStorage(this.context)
         }
         return options
-    }
-
-    workInFileFolder(fileId) {
-        let options = this.getOptions()
-        options.cwd = options.cwd + `/${fileId}`
-        return options
-    }
-
-    workInResultsFolder() {
-        return this.getOptions()
     }
 
     // (Command 2: Instrumenting memory access instructions in a input file)
@@ -38,9 +28,7 @@ export class DepProfiling extends TaskExecuter {
                 return
             }
 
-            const fileId = file.id
-
-            const options = this.workInFileFolder(fileId)
+            const options = this.getOptions()
 
             await mkdirp(options.cwd)
 
@@ -48,7 +36,7 @@ export class DepProfiling extends TaskExecuter {
             // -Xclang -load -Xclang ${DISCOPOP_BUILD}/libi/LLVMDPInstrumentation.so \
             // -mllvm -fm-path -mllvm ./FileMapping.txt \
             // -I $include_dir -o${src_file}_dp.ll $src_file
-            const command2 = `${Config.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -S -emit-llvm -fno-discard-value-names -Xclang -load -Xclang ${Config.discopopBuild}/libi/LLVMDPInstrumentation.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o dp_inst_${file.name}.ll -c ${file.path}`;
+            const command2 = `${Config.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -S -emit-llvm -fno-discard-value-names -Xclang -load -Xclang ${Config.discopopBuild}/libi/LLVMDPInstrumentation.so -mllvm -fm-path -mllvm ./FileMapping.txt -o dp_inst_${file.name}.ll -c ${file.path}`;
 
             console.log("Instrumenting DepProf...")
 
@@ -69,18 +57,17 @@ export class DepProfiling extends TaskExecuter {
 
     // (Command 3: Linking instrumented code with DiscoPoP runtime libraries)
     async executeLinking(): Promise<void> {
-        const options = this.workInResultsFolder()
+        const options = this.getOptions()
 
-        // todo DRY
         const llPaths = this.files.reduce(
             (prev, curr) => {
                 if (curr.path.endsWith('.h')) {
                     return prev
                 }
                 if (curr.id && curr.name) {
-                    const subpath = `${curr.id}/dp_inst_${curr.name}.ll`;
-                    if (fs.existsSync(`${options.cwd}/${subpath}`)) {
-                        const path = `./${subpath}`;
+                    const fileName = `dp_inst_${curr.name}.ll`;
+                    if (fs.existsSync(`${options.cwd}/${fileName}`)) {
+                        const path = `./${fileName}`;
                         return prev += " " + path
                     }
                 }
@@ -110,7 +97,7 @@ export class DepProfiling extends TaskExecuter {
     async executeDpRun(): Promise<void> {
 
         await new Promise<void>(async (resolve) => {
-            const options = this.workInResultsFolder()
+            const options = this.getOptions()
 
             const command4 = `./dp_run`;
 

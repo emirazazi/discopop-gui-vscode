@@ -20,49 +20,48 @@ export class CUGen extends TaskExecuter {
         }
     }
 
-    async executeDefault(options?: any | undefined): Promise<any> {
+    async executeDefault(): Promise<any> {
 
-        return await Promise.all(this.files.map(async (file: TreeItem) => {
-            // fail first all header files
-            if (file.path.endsWith('.h')) {
-                return
-            }
-            const fileId = file.id
+        const options = {
+            cwd: Utils.hiddenStorage(this.context)
+        }
 
-            const options = {
-                cwd: `${Utils.hiddenStorage(this.context)}/results/${fileId}`
-            }
+        await mkdirp(options.cwd)
 
-            await mkdirp(options.cwd)
+        this.clearDataXml(`${options.cwd}/Data.xml`)
 
-            this.clearDataXml(`${options.cwd}/Data.xml`)
+        const starterPromise = Promise.resolve(null);
+        await this.files.reduce(
+            (p, file) => p.then(() => this.runTask(file, options).then()),
+            starterPromise
+        );
 
-            const executeString = `${Config.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -fno-discard-value-names -Xclang -load -Xclang ${Config.discopopBuild}/libi/LLVMCUGeneration.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o dp_cu_${file.name}.ll -c ${file.path}`;
+        /* if (fs.existsSync(`${options.cwd}/Data.xml`)) {
+            const xmlString = fs.readFileSync(`${options.cwd}/Data.xml`).toString();
 
+            const stateManager = new StateManager(this.context);
+            stateManager.save('dataxmlstring', xmlString);
+
+            vscode.window.showInformationMessage("CUGen done for all files.")
+        } */
+    }
+
+    async runTask(file, options) {
+        if (file.path.endsWith('.h')) {
+            return
+        }
+
+        const executeString = `${Config.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -fno-discard-value-names -Xclang -load -Xclang ${Config.discopopBuild}/libi/LLVMCUGeneration.so -mllvm -fm-path -mllvm ./FileMapping.txt -o dp_cu_${file.name}.ll -c ${file.path}`;
+
+        await new Promise<void>((resolve) => {
             exec(executeString, options, (err, stdout, stderr) => {
                 if (err) {
                     console.log(`error: ${err.message}`);
                     return;
                 }
-
-                if (fs.existsSync(`${options.cwd}/Data.xml`)) {
-                    const xmlString = fs.readFileSync(`${options.cwd}/Data.xml`).toString();
-                    if (fileId) {
-                        const entryName = StateManager.getXmlEntryNameForFile(fileId)
-
-                        const stateManager = new StateManager(this.context);
-                        stateManager.save(entryName, xmlString);
-
-                        vscode.window.showInformationMessage("CUGen done for file: " + file.name)
-                    }
-                }
-
-                // callback can be completly avoided... just await whole function and resolve with success
-                /* if (this.onDone) {
-                    this.onDone.call(null,1);
-                } */
+                resolve()
             })
-        }));
+        })
     }
 
 
