@@ -1,4 +1,5 @@
 import { RootHookObject } from 'mocha';
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { TreeItemLabel, Uri, Command } from 'vscode';
 import parseMappingToTree from '../misc/FileMappingParser';
@@ -117,6 +118,11 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     }
 
     existingItem.active = !existingItem.active;
+
+    existingItem.iconPath = existingItem.active ?
+      path.join(__filename, '..', '..', '..', 'media', 'tree_icon.svg')
+      :
+      undefined;
 
     this.saveTreeToState();
   }
