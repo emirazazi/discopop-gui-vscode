@@ -4,6 +4,7 @@ import { exec } from 'child_process';
 import { TaskExecuter } from "./TaskExecuter";
 import mkdirp = require('mkdirp');
 import Utils from '../Utils';
+import { StateManager } from '../misc/StateManager';
 
 export class PatternIdentification extends TaskExecuter {
 
@@ -50,7 +51,9 @@ export class PatternIdentification extends TaskExecuter {
                 }
 
                 if (stdout) {
-
+                    const stateManager = new StateManager(this.context);
+                    stateManager.save('explorerResult', stdout);
+                    console.log(stdout)
                 }
 
                 vscode.window.showInformationMessage("Pattern Identification done!")
