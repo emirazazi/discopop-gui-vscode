@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider("discopop-view", sidebarProvider)
 	);
-	
+
 	// TREE VIEW
 	const treeDataProvider = new TreeDataProvider(context, "");
 	context.subscriptions.push(
@@ -36,7 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
 	);
 
 	// TOGGLE TREE VIEW ENTRY
-	
+
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.toggleEntry, (entry: TreeItem) => {
 		treeDataProvider.toggleEntry(entry);
 	}));
@@ -44,8 +44,8 @@ export function activate(context: vscode.ExtensionContext) {
 	// CODE LENS 
 	/* const codeLensProvider = new RecommendationsCodeLensProvider()
 	context.subscriptions.push(
-        vscode.languages.registerCodeLensProvider(
-            "*", //wildcard all for now
+		vscode.languages.registerCodeLensProvider(
+			"*", //wildcard all for now
 			codeLensProvider));
 
 	context.subscriptions.push(vscode.commands.registerCommand("discopop.enableCodeLens", () => {
@@ -65,15 +65,21 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// INIT APPLICATION
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.initApplication, async () => {
-		vscode.commands.executeCommand(Commands.refreshFileMapping)
+		if (!treeDataProvider.loadTreeFromState()) {
+			vscode.commands.executeCommand(Commands.refreshFileMapping)
+			vscode.window.showInformationMessage("Loaded tree from FileMapping.txt!");
+			return
+		}
+
+		vscode.window.showInformationMessage("Loaded tree from tree state!");
 	}))
 
 	// REFRESH TREE VIEW COMMAND
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.refreshFileMapping, async () => {
 		if (fs.existsSync(`${Utils.hiddenStorage(context)}/FileMapping.txt`)) {
 			const localSM = new StorageManager(context);
-			const newFileMapping =  await localSM.readFile('FileMapping.txt', true) as string
-	
+			const newFileMapping = await localSM.readFile('FileMapping.txt', true) as string
+
 			const stateManager = new StateManager(context);
 			stateManager.save("fileMapping", newFileMapping);
 			treeDataProvider.reloadFileMappingFromState();
@@ -116,7 +122,7 @@ export function activate(context: vscode.ExtensionContext) {
 // this method is called when your extension is deactivated
 export function deactivate() {
 	if (disposables) {
-        disposables.forEach(item => item.dispose());
-    }
-    disposables = [];
+		disposables.forEach(item => item.dispose());
+	}
+	disposables = [];
 }

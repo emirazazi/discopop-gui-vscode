@@ -89,6 +89,27 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     return res
   }
 
+  public saveTreeToState() {
+    const stateManager = new StateManager(this._context);
+
+    stateManager.save('tree', JSON.stringify(this.data));
+    this._onDidChangeTreeData.fire();
+  }
+
+  public loadTreeFromState(): boolean {
+    const stateManager = new StateManager(this._context);
+
+    const loadedTree = JSON.parse(stateManager.read('tree'));
+
+    if (loadedTree) {
+      this.data = loadedTree;
+      this._onDidChangeTreeData.fire();
+      return true
+    }
+
+    return false
+  }
+
   public toggleEntry(item: TreeItem) {
     const existingItem = TreeUtils.getChildById(this.data, item.id);
     if (!existingItem) {
@@ -96,11 +117,13 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     }
 
     existingItem.active = !existingItem.active;
+
+    this.saveTreeToState();
   }
 
   setFileMapping(fileMapping: string) {
-    this.data = parseMappingToTree(fileMapping)
-    this._onDidChangeTreeData.fire();
+    this.data = parseMappingToTree(fileMapping);
+    this.saveTreeToState();
   }
 
   public reloadFileMappingFromState(): boolean {
