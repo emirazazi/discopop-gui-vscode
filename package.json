@@ -96,7 +96,15 @@
 				  "light": "media/parallel.svg",
 				  "dark": "media/parallel.svg"
 				}
-			  },
+			},
+			{
+				"command": "discopop.toggleFolder",
+				"title": "Edit",
+				"icon": {
+				  "light": "media/parallel.svg",
+				  "dark": "media/parallel.svg"
+				}
+			},
 			{
                 "title": "Enable Recommendations CodeLens",
                 "command": "discopop.enableCodeLens",
@@ -114,7 +122,12 @@
 					"command": "discopop.toggleEntry",
 					"when": "view == explorerId && viewItem==file",
 					"group": "inline"
-				  }
+				},
+				{
+					"command": "discopop.toggleFolder",
+					"when": "view == explorerId && viewItem==folder",
+					"group": "inline"
+				}
 			]
 		}
 	  },

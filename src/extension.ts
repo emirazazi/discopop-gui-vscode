@@ -35,10 +35,14 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerTreeDataProvider("explorerId", treeDataProvider)
 	);
 
-	// TOGGLE TREE VIEW ENTRY
-
+	// TOGGLE TREE VIEW FILE
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.toggleEntry, (entry: TreeItem) => {
 		treeDataProvider.toggleEntry(entry);
+	}));
+
+	// TOGGLE TREE VIEW FOLDER
+	context.subscriptions.push(vscode.commands.registerCommand(Commands.toggleFolder, (entry: TreeItem) => {
+		treeDataProvider.toggleFolder(entry);
 	}));
 
 	// CODE LENS 

@@ -1,7 +1,7 @@
 export class Commands {
 
     public static initApplication: string = 'discopop.initApplication';
-    
+
     public static refreshFileMapping: string = 'discopop.refreshFileMapping';
 
     public static executeCUGen: string = 'discopop.executeCUGen';
@@ -13,6 +13,8 @@ export class Commands {
     public static executePatternId: string = 'discopop.executePatternId';
 
     public static toggleEntry: string = 'discopop.toggleEntry';
+
+    public static toggleFolder: string = 'discopop.toggleFolder';
 
     public static enableCodeLens: string = 'discopop.enableCodeLens';
 

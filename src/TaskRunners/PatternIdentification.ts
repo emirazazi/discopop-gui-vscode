@@ -22,7 +22,7 @@ export class PatternIdentification extends TaskExecuter {
     async exportDPInstall(): Promise<void> {
         const command = `export DISCOPOP_INSTALL=${Config.discopopBuild}`;
         await new Promise<void>((resolve) => {
-            exec(command, this.getOptions(), (err, stdout, stderr) => {
+            exec(command, this.getOptions(), (err) => {
                 if (err) {
                     console.log(`error: ${err.message}`);
                     return;

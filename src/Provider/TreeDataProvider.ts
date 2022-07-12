@@ -90,7 +90,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     return res
   }
 
-  public saveTreeToState() {
+  public saveTreeToStateAndRefresh() {
     const stateManager = new StateManager(this._context);
 
     stateManager.save('tree', JSON.stringify(this.data));
@@ -124,12 +124,18 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
       :
       undefined;
 
-    this.saveTreeToState();
+    this.saveTreeToStateAndRefresh();
+  }
+
+  public toggleFolder(root: TreeItem) {
+    TreeUtils.toggleAllChilds(root, !root.active);
+
+    this.saveTreeToStateAndRefresh();
   }
 
   setFileMapping(fileMapping: string) {
     this.data = parseMappingToTree(fileMapping);
-    this.saveTreeToState();
+    this.saveTreeToStateAndRefresh();
   }
 
   public reloadFileMappingFromState(): boolean {
