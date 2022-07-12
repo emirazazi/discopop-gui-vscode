@@ -11,37 +11,53 @@ export class PatternIdentification extends TaskExecuter {
         super(context, onDone);
     }
 
-    async executeDefault(): Promise<any> {
+    getOptions() {
+        const options = {
+            cwd: Utils.hiddenStorage(this.context)
+        }
+        return options
+    }
 
-        return await Promise.all(this.files.map(async (file, index) => {
-            const fileId = file.id
+    async exportDPInstall(): Promise<void> {
+        const command = `export DISCOPOP_INSTALL=${Config.discopopBuild}`;
+        await new Promise<void>((resolve) => {
+            exec(command, this.getOptions(), (err, stdout, stderr) => {
+                if (err) {
+                    console.log(`error: ${err.message}`);
+                    return;
+                }
+                resolve()
+            });
+        })
+    }
 
-            const options = {
-                cwd: Utils.hiddenStorage(this.context)
-            }
+    async executeDefault(): Promise<void> {
 
-            await mkdirp(options.cwd)
+        const options = this.getOptions();
 
-            // todo prepare analyzer 
-            // mv $HOME_DIR/discopop/$bin_dir/dp_run_dep.txt $HOME_DIR/discopop/
-            // mv $HOME_DIR/FileMapping.txt $HOME_DIR/discopop/
-            const command1 = `python3 -m discopop_explorer --path=${options.cwd} --dep-file=${file.name + '_dp_run'}_dep.txt --fmap=${Utils.hiddenStorage(this.context)}/FileMapping.txt --json ${file.path}/patterns.json`;
+        await mkdirp(options.cwd);
 
-            exec(command1, options, (err) => {
+        // mv $HOME_DIR/discopop/$bin_dir/dp_run_dep.txt $HOME_DIR/discopop/
+        // mv $HOME_DIR/FileMapping.txt $HOME_DIR/discopop/
+        // python3 -m discopop_explorer --path=<path> --cu-xml=<cuxml> --dep-file=<depfile> --loop-counter=<loopcount> --reduction=<reduction> --generate-data-cu-inst=<outputdir>
+        const command1 = `python3 -m discopop_explorer --path=${options.cwd} --cu-xml=${options.cwd}/Data.xml --dep-file=${options.cwd}/dp_run_dep.txt --reduction=${options.cwd}/reduction.txt`;
+
+        await new Promise<void>((resolve) => {
+            exec(command1, options, (err, stdout, stderr) => {
                 if (err) {
                     console.log(`error: ${err.message}`);
                     return;
                 }
 
-                vscode.window.showInformationMessage("PatternId done for file: " + file.name)
+                if (stdout) {
 
-                if (this.onDone) {
-                    this.onDone.call(null, 3);
                 }
 
-                // todo final result is ready here. Show results but do this outside of this class (source highlighting + result tree)
+                vscode.window.showInformationMessage("Pattern Identification done!")
+
+                resolve()
             });
-        }));
+        })
     }
 
     executeMakefile() {
