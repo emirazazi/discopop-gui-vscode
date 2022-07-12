@@ -9,7 +9,7 @@ import { TreeItem } from '../Provider/TreeDataProvider';
 
 export class DepProfiling extends TaskExecuter {
 
-    constructor (context: vscode.ExtensionContext, onDone?: Function) {
+    constructor(context: vscode.ExtensionContext, onDone?: Function) {
         super(context, onDone);
     }
 
@@ -31,15 +31,13 @@ export class DepProfiling extends TaskExecuter {
     }
 
     // (Command 2: Instrumenting memory access instructions in a input file)
-    async executeDefault(): Promise<any> {
+    async executeDefault(): Promise<void> {
         await Promise.all(this.files.map(async (file: TreeItem) => {
-            // todo copy header files to results folder
-
             // fail first all header files
             if (file.path.endsWith('.h')) {
                 return
             }
-  
+
             const fileId = file.id
 
             const options = this.workInFileFolder(fileId)
@@ -52,18 +50,25 @@ export class DepProfiling extends TaskExecuter {
             // -I $include_dir -o${src_file}_dp.ll $src_file
             const command2 = `${Config.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -S -emit-llvm -fno-discard-value-names -Xclang -load -Xclang ${Config.discopopBuild}/libi/LLVMDPInstrumentation.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o dp_inst_${file.name}.ll -c ${file.path}`;
 
-            await exec(command2,  options, (err) => {
-                if (err) {
-                    console.log(`error: ${err.message}`);
+            console.log("Instrumenting DepProf...")
+
+            await new Promise<void>((resolve) => {
+                exec(command2, options, (err) => {
+                    if (err) {
+                        console.log(`error: ${err.message}`);
+                        return;
+                    }
+                    console.log("Instrumenting DepProf done!")
+                    resolve()
                     return;
-                }
-                return;
+                });
             });
-        }));
+        }
+        ));
     }
 
     // (Command 3: Linking instrumented code with DiscoPoP runtime libraries)
-    async executeLinking(): Promise<any> {
+    async executeLinking(): Promise<void> {
         const options = this.workInResultsFolder()
 
         // todo DRY
@@ -74,7 +79,7 @@ export class DepProfiling extends TaskExecuter {
                 }
                 if (curr.id && curr.name) {
                     const subpath = `${curr.id}/dp_inst_${curr.name}.ll`;
-                    if(fs.existsSync(`${options.cwd}/${subpath}`)) {
+                    if (fs.existsSync(`${options.cwd}/${subpath}`)) {
                         const path = `./${subpath}`;
                         return prev += " " + path
                     }
@@ -83,36 +88,42 @@ export class DepProfiling extends TaskExecuter {
             },
             ""
         );
-        await new Promise(async () => {
+        await new Promise<void>((resolve) => {
+            console.log("Linking DepProf...")
 
-            // $CLANG++ ${src_file}_dp.ll  -o dp_run -L${DISCOPOP_BUILD}/rtlib -lDiscoPoP_RT -lpthread
+            // $CLANG++ ${src_file}_dp.ll -o dp_run -L${DISCOPOP_BUILD}/rtlib -lDiscoPoP_RT -lpthread
             const command3 = `${Config.clangPP}${llPaths} -o dp_run -L${Config.discopopBuild}/rtlib -lDiscoPoP_RT -lpthread`;
 
-            await exec(command3,  options, (err) => {
+            exec(command3, options, (err) => {
                 if (err) {
                     console.log(`error: ${err.message}`);
                     return;
                 }
-                return;
+                console.log("Linking done!")
+                resolve()
+                return
             });
         });
     }
 
     // (Command 4: Executing the program to obtain data dependences)
-    async executeDpRun(): Promise<any> {
-        await new Promise(async () => { 
+    async executeDpRun(): Promise<void> {
+
+        await new Promise<void>(async (resolve) => {
             const options = this.workInResultsFolder()
 
             const command4 = `./dp_run`;
+
+            console.log("Profiling...")
+
             exec(command4, options, (err) => {
                 if (err) {
                     console.log(`error: ${err.message}`);
                     return;
                 }
-                vscode.window.showInformationMessage("Profiler done")
-                if (this.onDone) {
-                    this.onDone(null, 2);
-                }
+                console.log("Profiler done!")
+                vscode.window.showInformationMessage("Profiler done!")
+                resolve()
             });
         })
     }

@@ -10,7 +10,7 @@ import { TreeItem } from '../Provider/TreeDataProvider';
 
 export class CUGen extends TaskExecuter {
 
-    constructor (context: vscode.ExtensionContext, onDone?: Function) {
+    constructor(context: vscode.ExtensionContext, onDone?: Function) {
         super(context, onDone);
     }
 
@@ -23,23 +23,23 @@ export class CUGen extends TaskExecuter {
     async executeDefault(options?: any | undefined): Promise<any> {
 
         return await Promise.all(this.files.map(async (file: TreeItem) => {
-             // fail first all header files
+            // fail first all header files
             if (file.path.endsWith('.h')) {
                 return
             }
             const fileId = file.id
-            
+
             const options = {
                 cwd: `${Utils.hiddenStorage(this.context)}/results/${fileId}`
             }
 
             await mkdirp(options.cwd)
-            
+
             this.clearDataXml(`${options.cwd}/Data.xml`)
 
             const executeString = `${Config.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -fno-discard-value-names -Xclang -load -Xclang ${Config.discopopBuild}/libi/LLVMCUGeneration.so -mllvm -fm-path -mllvm ../../FileMapping.txt -o dp_cu_${file.name}.ll -c ${file.path}`;
-            
-            exec(executeString,  options, (err, stdout, stderr) => {
+
+            exec(executeString, options, (err, stdout, stderr) => {
                 if (err) {
                     console.log(`error: ${err.message}`);
                     return;
@@ -64,7 +64,7 @@ export class CUGen extends TaskExecuter {
             })
         }));
     }
-    
+
 
     executeMakefile() {
         throw new Error('Method not implemented.');
