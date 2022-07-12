@@ -2,7 +2,9 @@ import path = require('path');
 import * as vscode from 'vscode';
 import { TreeItemCollapsibleState } from 'vscode';
 import { Config } from '../Config';
-import { ItemType, TreeItem } from '../Provider/TreeDataProvider';
+import { TreeItem } from '../Provider/TreeDataProvider';
+import { ItemType } from "../ItemType";
+import { TreeUtils } from '../TreeUtils';
 
 function createNode(tree: TreeItem[], filePath: string[], id: string) {
     let label = filePath.shift();
@@ -10,7 +12,7 @@ function createNode(tree: TreeItem[], filePath: string[], id: string) {
         return node.label === label;
     });
 
-    if(idx < 0) {
+    if (idx < 0) {
         // todo handle root workspace. Meaning put all root elements in one node
         const isFile = filePath.length === 0;
         tree.push({
@@ -28,7 +30,7 @@ function createNode(tree: TreeItem[], filePath: string[], id: string) {
             name: isFile ? getFileName(label) : undefined
         });
         if (filePath.length !== 0) {
-            createNode(tree[tree.length-1].children, filePath, id);
+            createNode(tree[tree.length - 1].children, filePath, id);
         }
     } else {
         createNode(tree[idx].children, filePath, id);
@@ -48,7 +50,7 @@ export default function parseMappingToTree(fileMapping: string): TreeItem {
         const lineArr = line.split("\t");
         let [id, path] = lineArr;
 
-        path = removeAbsoluteSubpath(path);
+        path = TreeUtils.removeAbsoluteSubpath(path);
         const split = path.split('/');
 
         createNode(tree, split, id);
@@ -60,32 +62,4 @@ export default function parseMappingToTree(fileMapping: string): TreeItem {
     root.contextValue = ItemType.Folder;
 
     return root;
-}
-
-// UTILS
-export function getPathById(tree: TreeItem[], id: string, path: string) {
-    const idx = tree.findIndex((node) => {
-        return node.id === id
-    });
-    if (idx < 0) {
-        for (const node of tree) {
-            if (node.children) {
-                if (node.label) {
-                    path += "/" + node.label
-                }
-                
-                return getPathById(node.children, id, path);
-            }
-        }
-    } else {
-        // if index found this means that the file has been found and full path can be returned
-        path += "/" + tree[idx].label;
-        return path;
-    }
-}
-
-export function removeAbsoluteSubpath(path: string) {
-    // /a/b/c/workingDirectory/d/e/f -> d/e/f
-    const workspacePath = Config.getWorkspacePath();
-    return path.replace(workspacePath + "/", '');
 }
