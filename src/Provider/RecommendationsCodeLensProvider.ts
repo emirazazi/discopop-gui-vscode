@@ -19,6 +19,7 @@ export default class RecommendationsCodeLensProvider implements vscode.CodeLensP
     public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
 
         if (Config.codeLensEnabled) {
+            console.log("CODE LENS ENABLED")
             this.codeLenses = [];
             const regex = new RegExp(this.regex);
             const text = document.getText();

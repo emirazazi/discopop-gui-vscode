@@ -46,7 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	// CODE LENS 
-	/* const codeLensProvider = new RecommendationsCodeLensProvider()
+	const codeLensProvider = new RecommendationsCodeLensProvider()
 	context.subscriptions.push(
 		vscode.languages.registerCodeLensProvider(
 			"*", //wildcard all for now
@@ -54,18 +54,18 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand("discopop.enableCodeLens", () => {
 		vscode.workspace.getConfiguration("discopop").update("recommendationsCodeLens", true, true);
-		})
+	})
 	)
 
 	context.subscriptions.push(vscode.commands.registerCommand("discopop.disableCodeLens", () => {
 		vscode.workspace.getConfiguration("discopop").update("recommendationsCodeLens", false, true);
-		})
+	})
 	)
 
 	context.subscriptions.push(vscode.commands.registerCommand("discopop.codelensAction", (args: any) => {
 		vscode.window.showInformationMessage(`CodeLens action clicked with args=${args}`);
-		})
-	) */
+	})
+	)
 
 	// INIT APPLICATION
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.initApplication, async () => {
