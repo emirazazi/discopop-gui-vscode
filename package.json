@@ -114,7 +114,7 @@
                 "title": "Disable Recommendations CodeLens",
                 "command": "discopop.disableCodeLens",
                 "category": "DiscoPoP"
-            }
+			}
 		],
 		"menus": {
 			"view/item/context": [

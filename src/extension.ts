@@ -62,8 +62,8 @@ export function activate(context: vscode.ExtensionContext) {
 	})
 	)
 
-	context.subscriptions.push(vscode.commands.registerCommand("discopop.codelensAction", (args: any) => {
-		vscode.window.showInformationMessage(`CodeLens action clicked with args=${args}`);
+	context.subscriptions.push(vscode.commands.registerCommand("discopop.codelensAction", (lineNumber) => {
+		RecommendationsCodeLensProvider.addConsoleLog(lineNumber)
 	})
 	)
 
