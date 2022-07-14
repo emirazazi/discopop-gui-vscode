@@ -56,7 +56,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 
     // add jump to file command for items which represent a file
     if (element.contextValue === ItemType.File) {
-      element.command = getCommand(TreeUtils.getPathById(this.data.children, element.id, Config.getWorkspacePath()), 0);
+      element.command = TreeUtils.getJumpToFileCommand(TreeUtils.getPathById(this.data.children, element.id, Config.getWorkspacePath()), 0);
     }
 
     return element;
@@ -161,32 +161,4 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 
     this.setFileMapping(fileMappingString)
   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export const getCommand = (fsPath: string, line: number): Command => {
-  let comm = {
-    title: "Jump to recommendation",
-    command: "vscode.open",
-    arguments: [
-      vscode.Uri.file(fsPath),
-      { selection: new vscode.Selection(new vscode.Position(line, 0), new vscode.Position(line, 0)) }
-    ]
-  };
-  return comm;
 }

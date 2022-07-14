@@ -1,4 +1,6 @@
 import * as path from "path";
+import * as vscode from "vscode";
+import { Command } from "vscode";
 import { Config } from "./Config";
 import { TreeItem } from "./Provider/TreeDataProvider";
 
@@ -56,5 +58,17 @@ export class TreeUtils {
         // /a/b/c/workingDirectory/d/e/f -> d/e/f
         const workspacePath = Config.getWorkspacePath();
         return path.replace(workspacePath + "/", '');
+    }
+
+    public static getJumpToFileCommand(fsPath: string, line: number): Command {
+        let comm = {
+            title: "Jump to file",
+            command: "vscode.open",
+            arguments: [
+                vscode.Uri.file(fsPath),
+                { selection: new vscode.Selection(new vscode.Position(line, 0), new vscode.Position(line, 0)) }
+            ]
+        };
+        return comm;
     }
 }
