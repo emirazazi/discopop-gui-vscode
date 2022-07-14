@@ -2,9 +2,11 @@ import { RootHookObject } from 'mocha';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { TreeItemLabel, Uri, Command } from 'vscode';
+import { ItemType } from '../ItemType';
 import parseMappingToTree from '../misc/FileMappingParser';
 import { StateManager } from '../misc/StateManager';
 import { TreeUtils } from '../TreeUtils';
+import { Config } from "../Config";
 
 interface NodeItem {
   id?: string;
@@ -51,6 +53,12 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
   getTreeItem(element: TreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
     // Implement this to return the UI representation (TreeItem) of the element that 
     // gets displayed in the view.
+
+    // add jump to file command for items which represent a file
+    if (element.contextValue === ItemType.File) {
+      element.command = getCommand(TreeUtils.getPathById(this.data.children, element.id, Config.getWorkspacePath()), 0);
+    }
+
     return element;
   }
 
@@ -171,7 +179,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 
 
 
-const getCommand = (fsPath: string, line: number): Command => {
+export const getCommand = (fsPath: string, line: number): Command => {
   let comm = {
     title: "Jump to recommendation",
     command: "vscode.open",
