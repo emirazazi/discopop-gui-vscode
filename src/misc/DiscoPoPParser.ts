@@ -20,4 +20,24 @@ export default class DiscoPoPParser {
 
         console.log(`result string retrieved by explorerResult is: ${resultString}`)
     }
+
+    private parseDoAll = (lines: []) => {
+
+    }
+
+    private parseGeometricDecomposition = (lines: []) => {
+
+    }
+
+    private parseReduciton = (lines: []) => {
+
+    }
+
+    private parseTaskParallelism = (lines: []) => {
+
+    }
+
+    private parsePipeline = (lines: []) => {
+
+    }
 }
