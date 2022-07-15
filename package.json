@@ -29,13 +29,13 @@
 			{
 			  "type": "webview",
 			  "id": "discopop-view",
-			  "name": "DiscoPoP",
+			  "name": "EXECUTION",
 			  "icon": "media/parallel.svg",
 			  "contextualTitle": "ExtensionSidebar"
 			},
 			{
 			  "id": "explorerId",
-			  "name": "ParallelResults"
+			  "name": "FILES"
 			}
 		  ]
 		},
