@@ -64,7 +64,7 @@ export class RedOp extends TaskExecuter {
                 if (curr.id && curr.name) {
                     const fileName = `dp_red_${curr.name}.ll`;
                     if (fs.existsSync(`${options.cwd}/${fileName}`)) {
-                        const path = `./${fileName}`;
+                        const path = `${fileName}`;
                         return prev += " " + path
                     }
                 }
@@ -89,10 +89,15 @@ export class RedOp extends TaskExecuter {
 
     // ((Command 7: executing the program which is instrumented to detect reduction pattern)
     async executeDpRunRed(): Promise<void> {
-        await new Promise<void>((resolve) => {
+        await new Promise<void>(async (resolve) => {
             const options = this.getOptions()
 
-            const command7 = `./dp_run_red`;
+            const clArgs = await Utils.handleClArgs(this.context);
+            let command7 = `./dp_run_red`;
+
+            if (clArgs?.length) {
+                command7 += " " + clArgs
+            }
 
             console.log("Identfying Patterns...")
 
