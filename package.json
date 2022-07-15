@@ -34,6 +34,11 @@
 			  "contextualTitle": "ExtensionSidebar"
 			},
 			{
+				"type": "webview",
+				"id": "result-view",
+				"name": "DISCOPOP SELECTED RESULT"
+			},
+			{
 			  "id": "explorerId",
 			  "name": "ParallelResults"
 			}
