@@ -6,6 +6,8 @@ import { TaskExecuter } from "./TaskExecuter";
 import mkdirp = require('mkdirp');
 import Utils from '../Utils';
 import { TreeItem } from '../Provider/TreeDataProvider';
+import { window } from 'vscode';
+import { StateManager } from '../misc/StateManager';
 
 export class DepProfiling extends TaskExecuter {
 
@@ -67,7 +69,7 @@ export class DepProfiling extends TaskExecuter {
                 if (curr.id && curr.name) {
                     const fileName = `dp_inst_${curr.name}.ll`;
                     if (fs.existsSync(`${options.cwd}/${fileName}`)) {
-                        const path = `./${fileName}`;
+                        const path = `${fileName}`;
                         return prev += " " + path
                     }
                 }
@@ -97,11 +99,16 @@ export class DepProfiling extends TaskExecuter {
     async executeDpRun(): Promise<void> {
 
         await new Promise<void>(async (resolve) => {
+            console.log("Profiling...")
             const options = this.getOptions()
 
-            const command4 = `./dp_run`;
+            const clArgs = await Utils.handleClArgs(this.context);
 
-            console.log("Profiling...")
+            let command4 = `./dp_run`;
+
+            if (clArgs?.length) {
+                command4 += " " + clArgs
+            }
 
             exec(command4, options, (err) => {
                 if (err) {
