@@ -90,6 +90,11 @@
 				"category": "DiscoPoP"
 			},
 			{
+				"title": "Apply Results to TreeView",
+				"command": "discopop.applyResultsToTreeView",
+				"category": "DiscoPoP"
+			},
+			{
 				"command": "discopop.toggleEntry",
 				"title": "Edit",
 				"icon": {

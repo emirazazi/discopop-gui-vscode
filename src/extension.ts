@@ -13,6 +13,7 @@ import { TreeDataProvider, TreeItem } from './Provider/TreeDataProvider';
 import Utils from './Utils';
 import RecommendationsCodeLensProvider from './Provider/RecommendationsCodeLensProvider';
 import { StateManager } from './misc/StateManager';
+import DiscoPoPParser from './misc/DiscoPoPParser';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -120,6 +121,13 @@ export function activate(context: vscode.ExtensionContext) {
 		const patternidRunner = new PatternIdentification(context);
 		patternidRunner.setFiles(treeDataProvider.getActiveFiles())
 		await patternidRunner.executeDefault()
+	}))
+
+	// APPLY RESULTS TO TREE VIEW
+	context.subscriptions.push(vscode.commands.registerCommand(Commands.applyResultsToTreeView, async () => {
+		const parser = new DiscoPoPParser(context);
+
+		parser.parseResultString();
 	}))
 }
 

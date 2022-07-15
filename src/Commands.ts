@@ -12,6 +12,8 @@ export class Commands {
 
     public static executePatternId: string = 'discopop.executePatternId';
 
+    public static applyResultsToTreeView: string = 'discopop.applyResultsToTreeView';
+
     public static toggleEntry: string = 'discopop.toggleEntry';
 
     public static toggleFolder: string = 'discopop.toggleFolder';
