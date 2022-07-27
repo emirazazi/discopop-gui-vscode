@@ -81,7 +81,6 @@ export default class DiscoPoPParser {
             }
 
             if (doAllRegex.test(element.toString())) {
-                console.log("do-all found")
                 this.parseDoAll(arr, index);
             }
 
@@ -163,7 +162,7 @@ export default class DiscoPoPParser {
             lastPrivate
         }
 
-        const treeItem = new TreeItem(`DO ALL AT LINE ${doAllResult.line}`)
+        let treeItem = new TreeItem(`DO ALL AT LINE ${doAllResult.line}`)
 
         treeItem.contextValue = ItemType.Result;
         treeItem.collapsibleState = TreeItemCollapsibleState.None;
@@ -210,7 +209,14 @@ export default class DiscoPoPParser {
             lastPrivate
         }
 
-        console.log(reductionResult)
+        let treeItem = new TreeItem(`REDUCTION AT LINE ${reductionResult.line}`)
+
+        treeItem.contextValue = ItemType.Result;
+        treeItem.collapsibleState = TreeItemCollapsibleState.None;
+
+        console.log(treeItem);
+
+        this.pushItemToResults(treeItem, fileId);
     }
 
     // !!! CAUTION !!!
