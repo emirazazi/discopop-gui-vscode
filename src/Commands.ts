@@ -14,6 +14,8 @@ export class Commands {
 
     public static applyResultsToTreeView: string = 'discopop.applyResultsToTreeView';
 
+    public static sendToDetail: string = 'discopop.sendToDetail';
+
     public static toggleEntry: string = 'discopop.toggleEntry';
 
     public static toggleFolder: string = 'discopop.toggleFolder';

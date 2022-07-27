@@ -11,7 +11,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onView:discopop-view"
+		"onView:execution-view"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -28,19 +28,18 @@
 		  "discopop-sidebar-view": [
 			{
 			  "type": "webview",
-			  "id": "discopop-view",
-			  "name": "EXECUTION",
-			  "icon": "media/parallel.svg",
-			  "contextualTitle": "ExtensionSidebar"
+			  "id": "execution-view",
+			  "name": "EXECUTION"
 			},
 			{
 				"type": "webview",
-				"id": "result-view",
-				"name": "DISCOPOP SELECTED RESULT"
+				"id": "detail-view",
+				"name": "RECOMMENDATION DETAIL"
 			},
 			{
-			  "id": "explorerId",
-			  "name": "FILES"
+				"type": "tree",
+			  	"id": "explorerId",
+			  	"name": "FILES"
 			}
 		  ]
 		},

@@ -14,6 +14,7 @@ import Utils from './Utils';
 import RecommendationsCodeLensProvider from './Provider/RecommendationsCodeLensProvider';
 import { StateManager } from './misc/StateManager';
 import DiscoPoPParser from './misc/DiscoPoPParser';
+import { DetailViewProvider } from './Provider/DetailViewProvider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -27,7 +28,13 @@ export function activate(context: vscode.ExtensionContext) {
 	// SIDEBAR
 	const sidebarProvider = new SidebarProvider(context);
 	context.subscriptions.push(
-		vscode.window.registerWebviewViewProvider("discopop-view", sidebarProvider)
+		vscode.window.registerWebviewViewProvider("execution-view", sidebarProvider)
+	);
+
+	// DETAIL VIEW
+	const detailViewProvider = new DetailViewProvider(context);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider("detail-view", detailViewProvider)
 	);
 
 	// TREE VIEW
