@@ -6,93 +6,93 @@ import { ResultType } from "../ResultType";
 import Utils from "../Utils";
 
 export class DetailViewProvider implements vscode.WebviewViewProvider {
-    _view?: vscode.WebviewView;
-    _doc?: vscode.TextDocument;
+  _view?: vscode.WebviewView;
+  _doc?: vscode.TextDocument;
 
-    private _extensionUri: vscode.Uri;
-    private context: vscode.ExtensionContext;
+  private _extensionUri: vscode.Uri;
+  private context: vscode.ExtensionContext;
 
-    private resultData: IDoAll | IReduction;
+  private resultData: IDoAll | IReduction;
 
-    constructor(context: vscode.ExtensionContext) {
-        this._extensionUri = context.extensionUri;
-        this.context = context;
-    }
+  constructor(context: vscode.ExtensionContext) {
+    this._extensionUri = context.extensionUri;
+    this.context = context;
+  }
 
-    public resolveWebviewView(webviewView: vscode.WebviewView) {
-        this._view = webviewView;
+  public resolveWebviewView(webviewView: vscode.WebviewView) {
+    this._view = webviewView;
 
-        webviewView.webview.options = {
-            // Allow scripts in the webview
-            enableScripts: true,
+    webviewView.webview.options = {
+      // Allow scripts in the webview
+      enableScripts: true,
 
-            localResourceRoots: [this._extensionUri],
-        };
+      localResourceRoots: [this._extensionUri],
+    };
 
-        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        webviewView.webview.onDidReceiveMessage(async (data) => {
-            switch (data.type) {
-                case "onInfo": {
-                    if (!data.value) {
-                        return;
-                    }
-                    vscode.window.showInformationMessage(data.value);
-                    break;
-                }
-                case "onError": {
-                    if (!data.value) {
-                        return;
-                    }
-                    vscode.window.showErrorMessage(data.value);
-                    break;
-                }
-                /* case "printDetail": {
-                    console.log(`Recommendation received with value: `)
-                    console.log(data.value);
-                    break;
-                } */
-            }
-        });
-    }
-
-    public revive(panel: vscode.WebviewView) {
-        this._view = panel;
-    }
-
-    public loadResultData(id) {
-        const stateManager = new StateManager(this.context);
-        const data = JSON.parse(stateManager.read(id));
-        if (!data) {
+    webviewView.webview.onDidReceiveMessage(async (data) => {
+      switch (data.type) {
+        case "onInfo": {
+          if (!data.value) {
             return;
+          }
+          vscode.window.showInformationMessage(data.value);
+          break;
         }
+        case "onError": {
+          if (!data.value) {
+            return;
+          }
+          vscode.window.showErrorMessage(data.value);
+          break;
+        }
+        /* case "printDetail": {
+            console.log(`Recommendation received with value: `)
+            console.log(data.value);
+            break;
+        } */
+      }
+    });
+  }
 
-        this.resultData = data;
-        const webviewView = this._view;
-        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+  public revive(panel: vscode.WebviewView) {
+    this._view = panel;
+  }
+
+  public loadResultData(id) {
+    const stateManager = new StateManager(this.context);
+    const data = JSON.parse(stateManager.read(id));
+    if (!data) {
+      return;
     }
 
-    public clearView() {
-        this.resultData = undefined;
-        const webviewView = this._view;
-        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-    }
+    this.resultData = data;
+    const webviewView = this._view;
+    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+  }
 
-    private _getHtmlForWebview(webview: vscode.Webview) {
-        // Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
-        //const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'sidebarProvider.js'));
+  public clearView() {
+    this.resultData = undefined;
+    const webviewView = this._view;
+    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+  }
 
-        const styleResetUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "media", "reset.css")
-        );
-        const styleVSCodeUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css")
-        );
+  private _getHtmlForWebview(webview: vscode.Webview) {
+    // Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
+    //const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'sidebarProvider.js'));
 
-        // Use a nonce to only allow a specific script to be run.
-        const nonce = Utils.getNonce();
+    const styleResetUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "media", "reset.css")
+    );
+    const styleVSCodeUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css")
+    );
 
-        return `<!DOCTYPE html>
+    // Use a nonce to only allow a specific script to be run.
+    const nonce = Utils.getNonce();
+
+    return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
 				<meta charset="UTF-8">
@@ -101,7 +101,7 @@ export class DetailViewProvider implements vscode.WebviewViewProvider {
 					and only allow scripts that have a specific nonce.
         -->
         <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource
-            }; script-src 'nonce-${nonce}';">
+      }; script-src 'nonce-${nonce}';">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<link href="${styleResetUri}" rel="stylesheet">
 				<link href="${styleVSCodeUri}" rel="stylesheet">
@@ -111,19 +111,19 @@ export class DetailViewProvider implements vscode.WebviewViewProvider {
                 ${this.resultData ? this.resultHtml() : this.emptyHtml()}
 			</body>
 			</html>`;
-    }
+  }
 
-    private resultHtml = () => {
-        return `<table style="width:100%">
+  private resultHtml = () => {
+    return `<table style="width:100%">
         ${this.resultData.resultType === ResultType.DoAll ? this.doAllEntries() : ""}
         ${this.resultData.resultType === ResultType.Reduction ? this.reductionEntries() : ""}
       </table>`
-    }
+  }
 
-    private doAllEntries = () => {
-        const doAll = this.resultData as IDoAll;
-        console.log(doAll.priv)
-        return `
+  private doAllEntries = () => {
+    const doAll = this.resultData as IDoAll;
+    console.log(doAll.priv)
+    return `
         <tr>
           <th>Type:</th>
           <td>${doAll.resultType}</td>
@@ -169,11 +169,11 @@ export class DetailViewProvider implements vscode.WebviewViewProvider {
           <td>${doAll.lastPrivate}</td>
         </tr>
         `
-    }
+  }
 
-    private reductionEntries = () => {
-        const reduction = this.resultData as IReduction;
-        return `
+  private reductionEntries = () => {
+    const reduction = this.resultData as IReduction;
+    return `
         <tr>
           <th>Type:</th>
           <td>${reduction.resultType}</td>
@@ -207,12 +207,12 @@ export class DetailViewProvider implements vscode.WebviewViewProvider {
           <td>${reduction.lastPrivate}</td>
         </tr>
         `
-    }
+  }
 
-    private emptyHtml = () => {
-        return `<h1>
-        No Recommendation Selected
-        </h1>
+  private emptyHtml = () => {
+    return `<p>
+        After running DiscoPoP, select a recommendation in the FILES view to display information about it here.
+        </p>
         `
-    }
+  }
 }
