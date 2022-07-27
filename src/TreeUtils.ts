@@ -4,8 +4,6 @@ import { Command } from "vscode";
 import { Config } from "./Config";
 import { TreeItem } from "./Provider/TreeDataProvider";
 
-
-
 export class TreeUtils {
 
     public static getChildById(root: TreeItem, id: string) {

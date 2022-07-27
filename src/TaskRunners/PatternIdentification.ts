@@ -38,17 +38,23 @@ export class PatternIdentification extends TaskExecuter {
 
         await mkdirp(options.cwd);
 
+        await this.exportDPInstall();
+
         // mv $HOME_DIR/discopop/$bin_dir/dp_run_dep.txt $HOME_DIR/discopop/
         // mv $HOME_DIR/FileMapping.txt $HOME_DIR/discopop/
         // python3 -m discopop_explorer --path=<path> --cu-xml=<cuxml> --dep-file=<depfile> --loop-counter=<loopcount> --reduction=<reduction> --generate-data-cu-inst=<outputdir>
         const command1 = `python3 -m discopop_explorer --path=${options.cwd} --cu-xml=${options.cwd}/Data.xml --dep-file=${options.cwd}/dp_run_dep.txt --reduction=${options.cwd}/reduction.txt`;
 
         await new Promise<void>((resolve) => {
+            console.log("Starting PatternIdentification")
+            console.log(options.cwd)
             exec(command1, options, (err, stdout, stderr) => {
-                if (err) {
-                    console.log(`error: ${err.message}`);
+                if (stderr) {
+                    console.log(`error: ${stderr}`);
                     return;
                 }
+
+                console.log("PatternIdentification Done!")
 
                 if (stdout) {
                     const stateManager = new StateManager(this.context);
