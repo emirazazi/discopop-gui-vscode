@@ -25,7 +25,6 @@ function createNode(tree: TreeItem[], filePath: string[], id: string) {
             // give 0 on init and if we have results for a file set to either 1 or 2
             collapsibleState: isFile ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Expanded,
             id: isFile ? id : undefined,
-            isFile: isFile,
             contextValue: isFile ? ItemType.File : ItemType.Folder,
             name: isFile ? getFileName(label) : undefined
         });

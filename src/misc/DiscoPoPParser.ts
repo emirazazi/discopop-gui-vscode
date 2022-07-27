@@ -3,6 +3,8 @@ import * as vscode from "vscode";
 import { StorageManager } from "./StorageManager";
 import { ItemType } from "../ItemType";
 import { ResultType } from "../ResultType";
+import { TreeDataProvider, TreeItem } from "../Provider/TreeDataProvider";
+import { TreeItemCollapsibleState } from "vscode";
 
 
 interface IBaseResult {
@@ -41,20 +43,31 @@ export default class DiscoPoPParser {
 
     context: vscode.ExtensionContext;
 
-    constructor(context: vscode.ExtensionContext) {
+    treeDataProvider: TreeDataProvider
+
+    treeRoot: TreeItem;
+
+    results;
+
+    constructor(context: vscode.ExtensionContext, treeDataProvider: TreeDataProvider) {
         this.context = context;
+        this.treeDataProvider = treeDataProvider;
+        this.treeRoot = treeDataProvider.data;
+        this.results = {};
     }
     parseResultString = async () => {
         // parse discoPoP result from state manager and apply it to eisting treeView
         // the application to the treeview would consist to adding items type result
         // retrieve id from the result file and with this id get the childbyid TreeUtils.getChildBId()
-        /* const stateManager = new StateManager(this.context);
-    
-        const resultString = stateManager.read('explorerResult') */
+        const stateManager = new StateManager(this.context);
 
-        const storageManager = new StorageManager(this.context, true);
+        const resultString = stateManager.read('explorerResult')
 
-        const resultString = await storageManager.readFile("ranked_patterns.txt", true) as any;
+        /* const storageManager = new StorageManager(this.context, true);
+
+        const resultString = await storageManager.readFile("ranked_patterns.txt", true) as any; */
+
+        console.log(resultString);
 
         const lines = resultString.split("\n");
 
@@ -62,18 +75,43 @@ export default class DiscoPoPParser {
 
         const doAllRegex = new RegExp('Do-all at')
 
-        await Promise.all(lines.map(async (element, index, arr) => {
+        lines.map((element, index, arr) => {
             if (reductionRegex.test(element.toString())) {
                 this.parseReduction(arr, index);
             }
 
-            /* if (doAllRegex.test(element.toString())) {
+            if (doAllRegex.test(element.toString())) {
                 this.parseDoAll(arr, index);
-            } */
+            }
 
             return
-        })
-        )
+        });
+
+        this.appendResultsToTree(this.treeRoot);
+        this.treeDataProvider.saveTreeToStateAndRefresh();
+    }
+
+    private appendResultsToTree = (root: TreeItem) => {
+        console.log(this.results)
+        if (root.id && this.results[root.id]?.children?.length > 0) {
+            root.children = this.results[root.id].children;
+            root.collapsibleState = TreeItemCollapsibleState.Expanded;
+            return
+        }
+        if (root.children) {
+            root.children.map((child) => this.appendResultsToTree(child))
+        }
+        return
+    }
+
+    private pushItemToResults = (item, fileId) => {
+        if (this.results[fileId] && this.results[fileId].children) {
+            this.results[fileId].children.push(item);
+        } else {
+            this.results[fileId] = {
+                children: [item]
+            }
+        }
     }
 
     private parseDoAll = (lines, index: number) => {
@@ -95,7 +133,6 @@ export default class DiscoPoPParser {
 
         const workload = parseInt(lines[index + 5].match(numberPattern)[0]);
 
-        // todo handle pragma
         const pragma = this.parseDoAllPragma(lines[index + 6]);
 
         const priv = this.parseArray(lines[index + 7]);
@@ -125,7 +162,14 @@ export default class DiscoPoPParser {
             lastPrivate
         }
 
-        console.log(doAllResult)
+        let treeItem = new TreeItem(`DO ALL AT LINE ${doAllResult.line}`)
+
+        treeItem.contextValue = ItemType.Result;
+        treeItem.collapsibleState = TreeItemCollapsibleState.None;
+
+        console.log(treeItem);
+
+        this.pushItemToResults(treeItem, fileId);
     }
 
     private parseReduction = (lines, index) => {
@@ -165,7 +209,14 @@ export default class DiscoPoPParser {
             lastPrivate
         }
 
-        console.log(reductionResult)
+        let treeItem = new TreeItem(`REDUCTION AT LINE ${reductionResult.line}`)
+
+        treeItem.contextValue = ItemType.Result;
+        treeItem.collapsibleState = TreeItemCollapsibleState.None;
+
+        console.log(treeItem);
+
+        this.pushItemToResults(treeItem, fileId);
     }
 
     // !!! CAUTION !!!

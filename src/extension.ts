@@ -132,7 +132,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// APPLY RESULTS TO TREE VIEW
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.applyResultsToTreeView, async () => {
-		const parser = new DiscoPoPParser(context);
+		const parser = new DiscoPoPParser(context, treeDataProvider);
 
 		await parser.parseResultString();
 	}))
