@@ -15,6 +15,8 @@ export class TreeItem extends vscode.TreeItem {
   name?: string;
   active?: boolean;
 
+  resultIdentifier?: string;
+
   constructor(label: string, children?: TreeItem[]) {
     super(
       label

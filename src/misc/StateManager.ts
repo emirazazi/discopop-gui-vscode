@@ -17,10 +17,4 @@ export class StateManager {
     read(entry: string): any {
         return this.context.workspaceState.get(entry);
     }
-
-    saveObject(object: object) {
-        Object.keys(object).map((key, value) => {
-            this.context.workspaceState.update(key, value);
-        });
-    }
 }

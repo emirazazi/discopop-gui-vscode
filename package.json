@@ -1,165 +1,168 @@
 {
   "name": "discopop-gui",
-	"displayName": "discopop-gui",
-	"description": "A VS Code extension for the Parallelism Discovery tool DiscoPoP.",
-	"author": "Emir Azazi",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.68.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onView:execution-view"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"viewsContainers": {
-		  "activitybar": [
-			{
-			  "id": "discopop-sidebar-view",
-			  "title": "DiscoPoP",
-			  "icon": "media/parallel.svg"
-			}
-		  ]
-		},
-		"views": {
-		  "discopop-sidebar-view": [
-			{
-			  "type": "webview",
-			  "id": "execution-view",
-			  "name": "EXECUTION"
-			},
-			{
-				"type": "webview",
-				"id": "detail-view",
-				"name": "RECOMMENDATION DETAIL"
-			},
-			{
-				"type": "tree",
-			  	"id": "explorerId",
-			  	"name": "FILES"
-			}
-		  ]
-		},
-		"configuration": {
-		  "title": "DiscoPoP",
-		  "properties": {
-			"discopop.discopopRoot": {
-			  "type": "string",
-			  "default": "",
-			  "description": "The path to your DiscoPoP installation. Please be sure the build and scripts folders exist. For more information regarding DiscoPoP please visit the [docs](https://github.com/discopop-project/discopop)."
-			},
-			"discopop.clang": {
-			  "type": "string",
-			  "default": "",
-			  "description": "The build path to clang v8."
-			},
-			"discopop.clangPP": {
-				"type": "string",
-				"default": "",
-				"description": "The build path to clang++ v8."
-			},
-			"discopop.recommendationsCodeLens": {
-				"type": "boolean",
-				"default": false
-			}
-		  }
-		},
-		"commands": [
-			{
-				"title": "Run File Mapping",
-				"command": "discopop.refreshFileMapping",
-				"category": "DiscoPoP"
-			},
-			{
-				"title": "Generate Computational Units",
-				"command": "discopop.executeCUGen",
-				"category": "DiscoPoP"
-			},
-			{
-				"title": "Profile Data Dependencies",
-				"command": "discopop.executeDepProf",
-				"category": "DiscoPoP"
-			},
-			{
-				"title": "Detect Reduction Patterns",
-				"command": "discopop.executeRedOp",
-				"category": "DiscoPoP"
-			},
-			{
-				"title": "Identify Parallel Patterns",
-				"command": "discopop.executePatternId",
-				"category": "DiscoPoP"
-			},
-			{
-				"title": "Apply Results to TreeView",
-				"command": "discopop.applyResultsToTreeView",
-				"category": "DiscoPoP"
-			},
-			{
-				"command": "discopop.toggleEntry",
-				"title": "Edit",
-				"icon": {
-				  "light": "media/parallel.svg",
-				  "dark": "media/parallel.svg"
-				}
-			},
-			{
-				"command": "discopop.toggleFolder",
-				"title": "Edit",
-				"icon": {
-				  "light": "media/parallel.svg",
-				  "dark": "media/parallel.svg"
-				}
-			},
-			{
-                "title": "Enable Recommendations CodeLens",
-                "command": "discopop.enableCodeLens",
-                "category": "DiscoPoP"
-            },
-            {
-                "title": "Disable Recommendations CodeLens",
-                "command": "discopop.disableCodeLens",
-                "category": "DiscoPoP"
-			}
-		],
-		"menus": {
-			"view/item/context": [
-				{
-					"command": "discopop.toggleEntry",
-					"when": "view == explorerId && viewItem==file",
-					"group": "inline"
-				},
-				{
-					"command": "discopop.toggleFolder",
-					"when": "view == explorerId && viewItem==folder",
-					"group": "inline"
-				}
-			]
-		}
-	  },
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile && npm run lint",
-		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/vscode": "^1.68.0",
-		"@types/glob": "^7.2.0",
-		"@types/mocha": "^9.1.1",
-		"@types/node": "16.x",
-		"@typescript-eslint/eslint-plugin": "^5.27.0",
-		"@typescript-eslint/parser": "^5.27.0",
-		"eslint": "^8.16.0",
-		"glob": "^8.0.3",
-		"mocha": "^10.0.0",
-		"typescript": "^4.7.2",
-		"@vscode/test-electron": "^2.1.3",
-		"mkdirp": "^1.0.4"
-	}
+  "displayName": "discopop-gui",
+  "description": "A VS Code extension for the Parallelism Discovery tool DiscoPoP.",
+  "author": "Emir Azazi",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.68.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:execution-view"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "discopop-sidebar-view",
+          "title": "DiscoPoP",
+          "icon": "media/parallel.svg"
+        }
+      ]
+    },
+    "views": {
+      "discopop-sidebar-view": [
+        {
+          "type": "webview",
+          "id": "execution-view",
+          "name": "EXECUTION"
+        },
+        {
+          "type": "webview",
+          "id": "detail-view",
+          "name": "RECOMMENDATION DETAIL"
+        },
+        {
+          "type": "tree",
+          "id": "explorerId",
+          "name": "FILES"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "DiscoPoP",
+      "properties": {
+        "discopop.discopopRoot": {
+          "type": "string",
+          "default": "",
+          "description": "The path to your DiscoPoP installation. Please be sure the build and scripts folders exist. For more information regarding DiscoPoP please visit the [docs](https://github.com/discopop-project/discopop)."
+        },
+        "discopop.clang": {
+          "type": "string",
+          "default": "",
+          "description": "The build path to clang v8."
+        },
+        "discopop.clangPP": {
+          "type": "string",
+          "default": "",
+          "description": "The build path to clang++ v8."
+        },
+        "discopop.recommendationsCodeLens": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "commands": [
+      {
+        "title": "Run File Mapping",
+        "command": "discopop.refreshFileMapping",
+        "category": "DiscoPoP"
+      },
+      {
+        "title": "Generate Computational Units",
+        "command": "discopop.executeCUGen",
+        "category": "DiscoPoP"
+      },
+      {
+        "title": "Profile Data Dependencies",
+        "command": "discopop.executeDepProf",
+        "category": "DiscoPoP"
+      },
+      {
+        "title": "Detect Reduction Patterns",
+        "command": "discopop.executeRedOp",
+        "category": "DiscoPoP"
+      },
+      {
+        "title": "Identify Parallel Patterns",
+        "command": "discopop.executePatternId",
+        "category": "DiscoPoP"
+      },
+      {
+        "title": "Apply Results to TreeView",
+        "command": "discopop.applyResultsToTreeView",
+        "category": "DiscoPoP"
+      },
+      {
+        "command": "discopop.toggleEntry",
+        "title": "Edit",
+        "icon": {
+          "light": "media/parallel.svg",
+          "dark": "media/parallel.svg"
+        }
+      },
+      {
+        "command": "discopop.toggleFolder",
+        "title": "Edit",
+        "icon": {
+          "light": "media/parallel.svg",
+          "dark": "media/parallel.svg"
+        }
+      },
+      {
+        "title": "Enable Recommendations CodeLens",
+        "command": "discopop.enableCodeLens",
+        "category": "DiscoPoP"
+      },
+      {
+        "title": "Disable Recommendations CodeLens",
+        "command": "discopop.disableCodeLens",
+        "category": "DiscoPoP"
+      }
+    ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "discopop.toggleEntry",
+          "when": "view == explorerId && viewItem==file",
+          "group": "inline"
+        },
+        {
+          "command": "discopop.toggleFolder",
+          "when": "view == explorerId && viewItem==folder",
+          "group": "inline"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.68.0",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
+    "@vscode/test-electron": "^2.1.3",
+    "eslint": "^8.16.0",
+    "glob": "^8.0.3",
+    "mkdirp": "^1.0.4",
+    "mocha": "^10.0.0",
+    "typescript": "^4.7.2"
+  },
+  "dependencies": {
+    "bson": "^4.6.5"
+  }
 }

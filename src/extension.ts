@@ -37,6 +37,10 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerWebviewViewProvider("detail-view", detailViewProvider)
 	);
 
+	context.subscriptions.push(vscode.commands.registerCommand(Commands.sendToDetail, (id) => {
+		detailViewProvider.loadResultData(id);
+	}));
+
 	// TREE VIEW
 	const treeDataProvider = new TreeDataProvider(context, "");
 	context.subscriptions.push(
@@ -132,6 +136,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// APPLY RESULTS TO TREE VIEW
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.applyResultsToTreeView, async () => {
+		detailViewProvider.clearView();
 		const parser = new DiscoPoPParser(context, treeDataProvider);
 
 		await parser.parseResultString();
