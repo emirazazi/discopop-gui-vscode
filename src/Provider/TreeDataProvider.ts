@@ -1,12 +1,10 @@
-import { RootHookObject } from 'mocha';
-import * as path from 'path';
 import * as vscode from 'vscode';
-import { TreeItemLabel, Uri, Command } from 'vscode';
 import { ItemType } from '../ItemType';
 import parseMappingToTree from '../misc/FileMappingParser';
 import { StateManager } from '../misc/StateManager';
 import { TreeUtils } from '../TreeUtils';
 import { Config } from "../Config";
+import Utils from '../Utils';
 
 export class TreeItem extends vscode.TreeItem {
   children: TreeItem[] | undefined;
@@ -50,6 +48,8 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     if (element.contextValue === ItemType.File) {
       element.command = TreeUtils.getJumpToFileCommand(TreeUtils.getPathById(this.data.children, element.id, Config.getWorkspacePath()), 0);
     }
+
+    element.iconPath = Utils.getIcon(element);
 
     return element;
   }
@@ -118,11 +118,6 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     }
 
     existingItem.active = !existingItem.active;
-
-    existingItem.iconPath = existingItem.active ?
-      path.join(__filename, '..', '..', '..', 'media', 'tree_icon.svg')
-      :
-      undefined;
 
     this.saveTreeToStateAndRefresh();
   }

@@ -1,5 +1,8 @@
+import path = require('path');
 import * as vscode from 'vscode';
+import { ItemType } from './ItemType';
 import { StateManager } from './misc/StateManager';
+import { TreeItem } from './Provider/TreeDataProvider';
 
 export default class Utils {
 
@@ -37,6 +40,29 @@ export default class Utils {
     }
 
     return clArgs
+  }
+
+  public static getIcon(item: TreeItem): any {
+    const nodeType = item.contextValue;
+    if (nodeType === ItemType.File && item.active) {
+      return {
+        light: path.join(__filename, '..', '..', 'media', 'file_active_light.svg'),
+        dark: path.join(__filename, '..', '..', 'media', 'file_active_dark.svg')
+      }
+    }
+    if (nodeType === ItemType.File && !item.active) {
+      return new vscode.ThemeIcon("eye-closed");
+    }
+    if (nodeType === ItemType.Result) {
+      return new vscode.ThemeIcon("output");
+    }
+    if (nodeType === ItemType.Folder) {
+      if (item.active) {
+        return new vscode.ThemeIcon("folder-active");
+      }
+      return new vscode.ThemeIcon("folder");
+    }
+    return null;
   }
 
 }

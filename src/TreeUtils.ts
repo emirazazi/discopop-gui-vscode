@@ -44,11 +44,6 @@ export class TreeUtils {
     public static toggleAllChilds(root: TreeItem, active: boolean) {
         root.active = active;
 
-        root.iconPath = active ?
-            path.join(__filename, '..', '..', 'media', 'tree_icon.svg')
-            :
-            undefined;
-
         root.children.map((child) => this.toggleAllChilds(child, active))
     }
 

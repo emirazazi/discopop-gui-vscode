@@ -102,16 +102,16 @@
         "command": "discopop.toggleEntry",
         "title": "Edit",
         "icon": {
-          "light": "media/parallel.svg",
-          "dark": "media/parallel.svg"
+          "light": "media/toggle.svg",
+          "dark": "media/toggle.svg"
         }
       },
       {
         "command": "discopop.toggleFolder",
         "title": "Edit",
         "icon": {
-          "light": "media/parallel.svg",
-          "dark": "media/parallel.svg"
+          "light": "media/toggle.svg",
+          "dark": "media/toggle.svg"
         }
       },
       {

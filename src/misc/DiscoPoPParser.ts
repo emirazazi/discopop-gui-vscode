@@ -61,13 +61,13 @@ export default class DiscoPoPParser {
         // parse discoPoP result from state manager and apply it to eisting treeView
         // the application to the treeview would consist to adding items type result
         // retrieve id from the result file and with this id get the childbyid TreeUtils.getChildBId()
-        const stateManager = new StateManager(this.context);
+        /* const stateManager = new StateManager(this.context);
 
-        const resultString = stateManager.read('explorerResult')
+        const resultString = stateManager.read('explorerResult') */
 
-        /* const storageManager = new StorageManager(this.context, true);
+        const storageManager = new StorageManager(this.context, true);
 
-        const resultString = await storageManager.readFile("ranked_patterns.txt", true) as any; */
+        const resultString = await storageManager.readFile("ranked_patterns.txt", true) as any;
 
         console.log(resultString);
 
