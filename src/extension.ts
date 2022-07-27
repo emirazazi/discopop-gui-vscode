@@ -105,7 +105,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// EXECUTE CU GEN
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.executeCUGen, async () => {
 		vscode.window.withProgress({
-			location: vscode.ProgressLocation.Window,
+			location: vscode.ProgressLocation.Notification,
 			cancellable: false,
 			title: 'Generating Computational Units'
 		}, async (progress) => {
@@ -123,7 +123,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// EXECUTE DEP PROF
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.executeDepProf, async () => {
 		vscode.window.withProgress({
-			location: vscode.ProgressLocation.Window,
+			location: vscode.ProgressLocation.Notification,
 			cancellable: false,
 			title: 'Profiling Data Dependencies'
 		}, async (progress) => {
@@ -143,7 +143,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// EXECUTE RED OP
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.executeRedOp, async () => {
 		vscode.window.withProgress({
-			location: vscode.ProgressLocation.Window,
+			location: vscode.ProgressLocation.Notification,
 			cancellable: false,
 			title: 'Detecting Reduction Patterns'
 		}, async (progress) => {
@@ -163,7 +163,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// EXECUTE PATTERN ID
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.executePatternId, async () => {
 		vscode.window.withProgress({
-			location: vscode.ProgressLocation.Window,
+			location: vscode.ProgressLocation.Notification,
 			cancellable: false,
 			title: 'Identifying Parallel Patterns'
 		}, async (progress) => {
