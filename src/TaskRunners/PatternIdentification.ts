@@ -51,6 +51,7 @@ export class PatternIdentification extends TaskExecuter {
             exec(command1, options, (err, stdout, stderr) => {
                 if (stderr) {
                     console.log(`error: ${stderr}`);
+                    resolve()
                     return;
                 }
 

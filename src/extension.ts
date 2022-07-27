@@ -104,34 +104,77 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// EXECUTE CU GEN
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.executeCUGen, async () => {
-		const cugenRunner = new CUGen(context)
-		cugenRunner.setFiles(treeDataProvider.getActiveFiles())
-		await cugenRunner.executeDefault()
+		vscode.window.withProgress({
+			location: vscode.ProgressLocation.Window,
+			cancellable: false,
+			title: 'Generating Computational Units'
+		}, async (progress) => {
+
+			progress.report({ increment: 0 });
+
+			const cugenRunner = new CUGen(context)
+			cugenRunner.setFiles(treeDataProvider.getActiveFiles())
+			await cugenRunner.executeDefault()
+
+			progress.report({ increment: 100 });
+		});
 	}))
 
 	// EXECUTE DEP PROF
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.executeDepProf, async () => {
-		const depprofRunner = new DepProfiling(context);
-		depprofRunner.setFiles(treeDataProvider.getActiveFiles())
-		await depprofRunner.executeDefault()
-		await depprofRunner.executeLinking()
-		await depprofRunner.executeDpRun()
+		vscode.window.withProgress({
+			location: vscode.ProgressLocation.Window,
+			cancellable: false,
+			title: 'Profiling Data Dependencies'
+		}, async (progress) => {
+
+			progress.report({ increment: 0 });
+
+			const depprofRunner = new DepProfiling(context);
+			depprofRunner.setFiles(treeDataProvider.getActiveFiles())
+			await depprofRunner.executeDefault()
+			await depprofRunner.executeLinking()
+			await depprofRunner.executeDpRun()
+
+			progress.report({ increment: 100 });
+		});
 	}))
 
 	// EXECUTE RED OP
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.executeRedOp, async () => {
-		const redopRunner = new RedOp(context);
-		redopRunner.setFiles(treeDataProvider.getActiveFiles())
-		await redopRunner.executeDefault()
-		await redopRunner.linkInstrumentedLoops()
-		await redopRunner.executeDpRunRed()
+		vscode.window.withProgress({
+			location: vscode.ProgressLocation.Window,
+			cancellable: false,
+			title: 'Detecting Reduction Patterns'
+		}, async (progress) => {
+
+			progress.report({ increment: 0 });
+
+			const redopRunner = new RedOp(context);
+			redopRunner.setFiles(treeDataProvider.getActiveFiles())
+			await redopRunner.executeDefault()
+			await redopRunner.linkInstrumentedLoops()
+			await redopRunner.executeDpRunRed()
+
+			progress.report({ increment: 100 });
+		});
 	}))
 
 	// EXECUTE PATTERN ID
 	context.subscriptions.push(vscode.commands.registerCommand(Commands.executePatternId, async () => {
-		const patternidRunner = new PatternIdentification(context);
-		patternidRunner.setFiles(treeDataProvider.getActiveFiles())
-		await patternidRunner.executeDefault()
+		vscode.window.withProgress({
+			location: vscode.ProgressLocation.Window,
+			cancellable: false,
+			title: 'Identifying Parallel Patterns'
+		}, async (progress) => {
+			progress.report({ increment: 0 });
+
+			const patternidRunner = new PatternIdentification(context);
+			patternidRunner.setFiles(treeDataProvider.getActiveFiles())
+			await patternidRunner.executeDefault()
+
+			progress.report({ increment: 100 });
+		});
 	}))
 
 	// APPLY RESULTS TO TREE VIEW
