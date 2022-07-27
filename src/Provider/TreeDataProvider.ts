@@ -8,22 +8,12 @@ import { StateManager } from '../misc/StateManager';
 import { TreeUtils } from '../TreeUtils';
 import { Config } from "../Config";
 
-interface NodeItem {
-  id?: string;
-  fsPath?: string;
-  isFile: boolean;
-  resourceUri?: Uri;
-  line?: number;
-  column?: number;
-}
-
-export class TreeItem extends vscode.TreeItem implements NodeItem {
+export class TreeItem extends vscode.TreeItem {
   children: TreeItem[] | undefined;
-  id: string;
-  isFile: boolean;
+  id?: string;
   path?: string;
   name?: string;
-  active: boolean;
+  active?: boolean;
 
   constructor(label: string, children?: TreeItem[]) {
     super(
@@ -37,7 +27,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
   private _onDidChangeTreeData: vscode.EventEmitter<TreeItem | undefined | null | void> = new vscode.EventEmitter<TreeItem | undefined | null | void>();
   readonly onDidChangeTreeData: vscode.Event<TreeItem | undefined | null | void> = this._onDidChangeTreeData.event;
 
-  data: TreeItem;
+  public data: TreeItem;
 
   private _context: vscode.ExtensionContext;
   private _workspaceRoot: string | undefined;
