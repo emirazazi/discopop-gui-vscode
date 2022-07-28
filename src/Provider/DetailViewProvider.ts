@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { Commands } from "../Commands";
 import { IDoAll, IReduction } from "../misc/DiscoPoPParser";
 import { StateManager } from "../misc/StateManager";
+import { ResultStatus } from "../ResultStatus";
 import { ResultType } from "../ResultType";
 import Utils from "../Utils";
 
@@ -115,6 +116,10 @@ export class DetailViewProvider implements vscode.WebviewViewProvider {
 
   private resultHtml = () => {
     return `<table style="width:100%">
+        <tr>
+          <th>Status:</th>
+          <td>${this.resultData.status === ResultStatus.New ? "Not Applied" : "Applied"}</td>
+        </tr>
         ${this.resultData.resultType === ResultType.DoAll ? this.doAllEntries() : ""}
         ${this.resultData.resultType === ResultType.Reduction ? this.reductionEntries() : ""}
       </table>`
@@ -122,7 +127,6 @@ export class DetailViewProvider implements vscode.WebviewViewProvider {
 
   private doAllEntries = () => {
     const doAll = this.resultData as IDoAll;
-    console.log(doAll.priv)
     return `
         <tr>
           <th>Type:</th>

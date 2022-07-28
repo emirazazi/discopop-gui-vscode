@@ -28,7 +28,6 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
 
     public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
 
-        // just build array of codelenses
         if (Config.codeLensEnabled) {
             const stateManager = new StateManager(this.context);
             const ids = stateManager.read(document.fileName.toString())
