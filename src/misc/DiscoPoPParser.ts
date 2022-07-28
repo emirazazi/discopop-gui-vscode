@@ -7,11 +7,17 @@ import { TreeDataProvider, TreeItem } from "../Provider/TreeDataProvider";
 import { TreeItemCollapsibleState } from "vscode";
 import { ObjectID } from "bson";
 import { Commands } from "../Commands";
+import { TreeUtils } from "../TreeUtils";
+import { Config } from "../Config";
+import { ResultStatus } from "../ResultStatus";
 
 
 interface IBaseResult {
+    id: string,
     resultType: ResultType,
-    fileId: number
+    fileId: number,
+
+    status: ResultStatus
 }
 
 export interface IReduction extends IBaseResult {
@@ -69,7 +75,7 @@ export default class DiscoPoPParser {
 
         const resultString = await storageManager.readFile("ranked_patterns.txt", true) as any;
 
-        console.log(resultString);
+        //console.log(resultString);
 
         const lines = resultString.split("\n");
 
@@ -94,8 +100,10 @@ export default class DiscoPoPParser {
     }
 
     private appendResultsToTree = (root: TreeItem) => {
-        console.log(this.results)
         if (root.id && this.results[root.id]?.children?.length > 0) {
+
+            this.saveIdsToStateManagerToRetrieveInCodeLensProvider(root);
+
             root.children = this.results[root.id].children;
             root.collapsibleState = TreeItemCollapsibleState.Expanded;
             return
@@ -104,6 +112,17 @@ export default class DiscoPoPParser {
             root.children.map((child) => this.appendResultsToTree(child))
         }
         return
+    }
+
+    // todo decouple
+    private saveIdsToStateManagerToRetrieveInCodeLensProvider = (root) => {
+        const treePath = TreeUtils.getPathById(this.treeRoot.children, root.id, Config.getWorkspacePath())
+
+        const ids = this.results[root.id].children.map((elem) => elem.resultIdentifier);
+
+        const stateManager = new StateManager(this.context);
+
+        stateManager.save(treePath, JSON.stringify(ids))
     }
 
     private pushItemToResults = (item, fileId) => {
@@ -119,11 +138,7 @@ export default class DiscoPoPParser {
     private saveResultToState = (result) => {
         const stateManager = new StateManager(this.context);
 
-        const resultIdentifier = new ObjectID().toString();
-
-        stateManager.save(resultIdentifier, JSON.stringify(result));
-
-        return resultIdentifier
+        stateManager.save(result.id, JSON.stringify(result));
     }
 
     private addSendToDetailOnClickCommand = (item, id) => {
@@ -168,6 +183,8 @@ export default class DiscoPoPParser {
         const lastPrivate = this.parseArray(lines[index + 11]);
 
         const doAllResult: IDoAll = {
+            id: new ObjectID().toString(),
+            status: ResultStatus.New,
             resultType: ResultType.DoAll,
             fileId,
             line,
@@ -184,17 +201,15 @@ export default class DiscoPoPParser {
             lastPrivate
         }
 
-        const resultIdentifier = this.saveResultToState(doAllResult);
+        this.saveResultToState(doAllResult);
 
         let treeItem = new TreeItem(`DO ALL AT LINE ${doAllResult.line}`)
 
         treeItem.contextValue = ItemType.Result;
         treeItem.collapsibleState = TreeItemCollapsibleState.None;
-        treeItem.resultIdentifier = resultIdentifier;
+        treeItem.resultIdentifier = doAllResult.id;
 
-        this.addSendToDetailOnClickCommand(treeItem, resultIdentifier);
-
-        console.log(treeItem);
+        this.addSendToDetailOnClickCommand(treeItem, doAllResult.id);
 
         this.pushItemToResults(treeItem, fileId);
     }
@@ -223,6 +238,8 @@ export default class DiscoPoPParser {
         const lastPrivate = this.parseArray(lines[index + 8]);
 
         const reductionResult: IReduction = {
+            id: new ObjectID().toString(),
+            status: ResultStatus.New,
             resultType: ResultType.Reduction,
             fileId,
             line,
@@ -236,17 +253,15 @@ export default class DiscoPoPParser {
             lastPrivate
         }
 
-        const resultIdentifier = this.saveResultToState(reductionResult);
+        this.saveResultToState(reductionResult);
 
         let treeItem = new TreeItem(`REDUCTION AT LINE ${reductionResult.line}`)
 
         treeItem.contextValue = ItemType.Result;
         treeItem.collapsibleState = TreeItemCollapsibleState.None;
-        treeItem.resultIdentifier = resultIdentifier;
+        treeItem.resultIdentifier = reductionResult.id;
 
-        this.addSendToDetailOnClickCommand(treeItem, resultIdentifier);
-
-        console.log(treeItem);
+        this.addSendToDetailOnClickCommand(treeItem, reductionResult.id);
 
         this.pushItemToResults(treeItem, fileId);
     }
@@ -288,7 +303,6 @@ export default class DiscoPoPParser {
 
         let match
         while (match = regex.exec(line)) {
-            console.log(match[0])
             result.push(match[0].slice(1, -1))
         }
 

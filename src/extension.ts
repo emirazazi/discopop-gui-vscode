@@ -11,7 +11,7 @@ import { StorageManager } from './misc/StorageManager';
 import { SidebarProvider } from './Provider/SidebarProvider';
 import { TreeDataProvider, TreeItem } from './Provider/TreeDataProvider';
 import Utils from './Utils';
-import RecommendationsCodeLensProvider from './Provider/RecommendationsCodeLensProvider';
+import CodeLensProvider from './Provider/CodeLensProvider';
 import { StateManager } from './misc/StateManager';
 import DiscoPoPParser from './misc/DiscoPoPParser';
 import { DetailViewProvider } from './Provider/DetailViewProvider';
@@ -58,7 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	// CODE LENS 
-	const codeLensProvider = new RecommendationsCodeLensProvider()
+	const codeLensProvider = new CodeLensProvider(context)
 	context.subscriptions.push(
 		vscode.languages.registerCodeLensProvider(
 			"*", //wildcard all for now
@@ -75,7 +75,7 @@ export function activate(context: vscode.ExtensionContext) {
 	)
 
 	context.subscriptions.push(vscode.commands.registerCommand("discopop.codelensAction", (lineNumber) => {
-		RecommendationsCodeLensProvider.addConsoleLog(lineNumber)
+		codeLensProvider.insertRecommendation(lineNumber);
 	})
 	)
 
