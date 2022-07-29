@@ -3,6 +3,7 @@ import { CancellationToken, CodeLens, Command, Position, Range, SnippetString, T
 import { Commands } from '../Commands';
 import { Config } from '../Config';
 import { IDoAll, IReduction } from '../misc/DiscoPoPParser';
+import SnippetBuilder from '../misc/SnippetBuilder';
 import { StateManager } from '../misc/StateManager';
 import { ResultStatus } from '../ResultStatus';
 import { ResultType } from '../ResultType';
@@ -90,7 +91,6 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
         return codeLens
     }
     public insertRecommendation = async (recommendationId) => {
-        console.log("INSERTING " + recommendationId)
         let recommendation = this.recommendations?.find((elem) => elem.id === recommendationId)
 
         if (!recommendation) {
@@ -140,22 +140,19 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
     }
 
     private insertDoAll = (recommendation) => {
-        this.addTestLine(recommendation.startLine)
+        this.insertSnippet(recommendation)
     }
 
     private insertReduction = (recommendation) => {
-        this.addTestLine(recommendation.startLine)
+        this.insertSnippet(recommendation)
     }
 
-    private addTestLine = async (lineNumber) => {
-
-
+    private insertSnippet = (result) => {
         const editor = vscode.window.activeTextEditor;
-
 
         if (editor) {
             editor.edit(editBuilder => {
-                editBuilder.insert(new Position(lineNumber - 1, 0), "//this is an inserted snippet\n");
+                editBuilder.insert(new Position(result.startLine - 1, 0), SnippetBuilder.buildSnippet(result));
             })
         }
     }
