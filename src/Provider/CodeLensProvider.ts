@@ -76,7 +76,7 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
 
     public buildCodeLens(result) {
 
-        const position = new vscode.Position(result.line, 0);
+        const position = new vscode.Position(result.startLine - 1, 0);
         const range = new Range(position, position)
 
         const typeText = result.resultType === ResultType.DoAll ? "Do All" : "Reduction"
@@ -121,7 +121,7 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
             if (recommendation.id === removedRecommendation.id) {
                 return
             }
-            if (recommendation.line > removedRecommendation.line) {
+            if (recommendation.startLine > removedRecommendation.startLine) {
                 if (recommendation.startLine) {
                     recommendation.startLine += 1;
                 }
@@ -140,24 +140,23 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
     }
 
     private insertDoAll = (recommendation) => {
-        console.log("Do all inserted")
+        this.addTestLine(recommendation.startLine)
     }
 
     private insertReduction = (recommendation) => {
-        console.log("Reduction inserted")
+        this.addTestLine(recommendation.startLine)
     }
 
-    /* static addConsoleLog = async (lineNumber) => {
+    private addTestLine = async (lineNumber) => {
 
 
         const editor = vscode.window.activeTextEditor;
 
-        console.log(lineNumber)
 
         if (editor) {
             editor.edit(editBuilder => {
-                editBuilder.insert(new Position(lineNumber, 0), "//this is an inserted snippet\n");
+                editBuilder.insert(new Position(lineNumber - 1, 0), "//this is an inserted snippet\n");
             })
         }
-    } */
+    }
 }

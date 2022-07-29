@@ -45,15 +45,17 @@ export class PatternIdentification extends TaskExecuter {
         // python3 -m discopop_explorer --path=<path> --cu-xml=<cuxml> --dep-file=<depfile> --loop-counter=<loopcount> --reduction=<reduction> --generate-data-cu-inst=<outputdir>
         const command1 = `python3 -m discopop_explorer --path=${options.cwd} --cu-xml=${options.cwd}/Data.xml --dep-file=${options.cwd}/dp_run_dep.txt --reduction=${options.cwd}/reduction.txt`;
 
+        console.log(command1)
         await new Promise<void>((resolve) => {
             console.log("Starting PatternIdentification")
             console.log(options.cwd)
             exec(command1, options, (err, stdout, stderr) => {
-                if (stderr) {
+                // ignore for now because of some weird display error
+                /* if (stderr) {
                     console.log(`error: ${stderr}`);
                     resolve()
                     return;
-                }
+                } */
 
                 console.log("PatternIdentification Done!")
 

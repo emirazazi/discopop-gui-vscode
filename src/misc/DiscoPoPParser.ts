@@ -65,17 +65,15 @@ export default class DiscoPoPParser {
     }
     parseResultString = async () => {
         // parse discoPoP result from state manager and apply it to eisting treeView
-        // the application to the treeview would consist to adding items type result
-        // retrieve id from the result file and with this id get the childbyid TreeUtils.getChildBId()
-        /* const stateManager = new StateManager(this.context);
+        // the application to the treeview is made through appending them as result nodes
+        const stateManager = new StateManager(this.context);
 
-        const resultString = stateManager.read('explorerResult') */
+        const resultString = stateManager.read('explorerResult');
+        console.log(resultString);
 
-        const storageManager = new StorageManager(this.context, true);
+        /* const storageManager = new StorageManager(this.context, true);
 
-        const resultString = await storageManager.readFile("ranked_patterns.txt", true) as any;
-
-        //console.log(resultString);
+        const resultString = await storageManager.readFile("ranked_patterns.txt", true) as any; */
 
         const lines = resultString.split("\n");
 
@@ -203,7 +201,7 @@ export default class DiscoPoPParser {
 
         this.saveResultToState(doAllResult);
 
-        let treeItem = new TreeItem(`DO ALL AT LINE ${doAllResult.line}`)
+        let treeItem = new TreeItem(`DO ALL`)
 
         treeItem.contextValue = ItemType.Result;
         treeItem.collapsibleState = TreeItemCollapsibleState.None;
@@ -255,7 +253,7 @@ export default class DiscoPoPParser {
 
         this.saveResultToState(reductionResult);
 
-        let treeItem = new TreeItem(`REDUCTION AT LINE ${reductionResult.line}`)
+        let treeItem = new TreeItem(`REDUCTION`)
 
         treeItem.contextValue = ItemType.Result;
         treeItem.collapsibleState = TreeItemCollapsibleState.None;

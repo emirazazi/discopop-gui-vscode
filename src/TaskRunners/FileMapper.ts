@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { Config } from '../Config';
 import { StorageManager } from '../misc/StorageManager';
 
-import {exec} from 'child_process';
+import { exec } from 'child_process';
 import { Commands } from '../Commands';
 
 // saves files to hidden vscode storage
@@ -12,7 +12,7 @@ export class FileMapper {
     context: vscode.ExtensionContext;
     onDone: Function | undefined;
 
-    constructor (context: vscode.ExtensionContext, onDone?: Function | undefined) {
+    constructor(context: vscode.ExtensionContext, onDone?: Function | undefined) {
         this.context = context;
         this.onDone = onDone;
     }
@@ -55,10 +55,7 @@ export class FileMapper {
 
             vscode.commands.executeCommand(Commands.refreshFileMapping)
 
-
-            if (this.onDone) {
-                this.onDone.call(null, 0);
-            }
+            vscode.window.showInformationMessage("File Mapping done!")
         });
     }
 

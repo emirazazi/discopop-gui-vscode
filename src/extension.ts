@@ -113,7 +113,11 @@ export function activate(context: vscode.ExtensionContext) {
 			progress.report({ increment: 0 });
 
 			const cugenRunner = new CUGen(context)
-			cugenRunner.setFiles(treeDataProvider.getActiveFiles())
+			const files = treeDataProvider.getActiveFiles()
+			if (!files || !files?.length) {
+				vscode.window.showInformationMessage("Please select at least one file before executing a task!")
+			}
+			cugenRunner.setFiles(files)
 			await cugenRunner.executeDefault()
 
 			progress.report({ increment: 100 });
@@ -131,7 +135,12 @@ export function activate(context: vscode.ExtensionContext) {
 			progress.report({ increment: 0 });
 
 			const depprofRunner = new DepProfiling(context);
-			depprofRunner.setFiles(treeDataProvider.getActiveFiles())
+
+			const files = treeDataProvider.getActiveFiles()
+			if (!files || !files?.length) {
+				vscode.window.showInformationMessage("Please select at least one file before executing a task!")
+			}
+			depprofRunner.setFiles(files)
 			await depprofRunner.executeDefault()
 			await depprofRunner.executeLinking()
 			await depprofRunner.executeDpRun()
@@ -151,7 +160,12 @@ export function activate(context: vscode.ExtensionContext) {
 			progress.report({ increment: 0 });
 
 			const redopRunner = new RedOp(context);
-			redopRunner.setFiles(treeDataProvider.getActiveFiles())
+
+			const files = treeDataProvider.getActiveFiles()
+			if (!files || !files?.length) {
+				vscode.window.showInformationMessage("Please select at least one file before executing a task!")
+			}
+			redopRunner.setFiles(files)
 			await redopRunner.executeDefault()
 			await redopRunner.linkInstrumentedLoops()
 			await redopRunner.executeDpRunRed()
@@ -170,8 +184,10 @@ export function activate(context: vscode.ExtensionContext) {
 			progress.report({ increment: 0 });
 
 			const patternidRunner = new PatternIdentification(context);
-			patternidRunner.setFiles(treeDataProvider.getActiveFiles())
-			await patternidRunner.executeDefault()
+			//patternidRunner.setFiles(treeDataProvider.getActiveFiles())
+			await patternidRunner.executeDefault();
+
+			vscode.commands.executeCommand(Commands.applyResultsToTreeView);
 
 			progress.report({ increment: 100 });
 		});

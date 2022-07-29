@@ -133,8 +133,16 @@ export class DetailViewProvider implements vscode.WebviewViewProvider {
           <td>${doAll.resultType}</td>
         </tr>
         <tr>
-          <th>Line:</th>
+          <th>No Clue:</th>
           <td>${doAll.line}</td>
+        </tr>
+        <tr>
+          <th>Start Line:</th>
+          <td>${doAll.startLine}</td>
+        </tr>
+        <tr>
+          <th>End Line:</th>
+          <td>${doAll.endLine}</td>
         </tr>
         <tr>
           <th>Pragma:</th>
@@ -183,8 +191,16 @@ export class DetailViewProvider implements vscode.WebviewViewProvider {
           <td>${reduction.resultType}</td>
         </tr>
         <tr>
-          <th>Line:</th>
-          <td>${reduction.line}</td>
+        <th>No Clue:</th>
+        <td>${reduction.line}</td>
+        </tr>
+        <tr>
+          <th>Start Line:</th>
+          <td>${reduction.startLine}</td>
+        </tr>
+        <tr>
+          <th>End Line:</th>
+          <td>${reduction.endLine}</td>
         </tr>
         <tr>
           <th>Pragma:</th>

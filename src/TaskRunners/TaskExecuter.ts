@@ -16,7 +16,7 @@ export abstract class TaskExecuter {
 
     re = new RegExp(/[^\\\/]+(?=\.[\w]+$)|[^\\\/]+$/g);
 
-    constructor (context: vscode.ExtensionContext, onDone?: Function) {
+    constructor(context: vscode.ExtensionContext, onDone?: Function) {
         this.context = context;
         this.onDone = onDone;
     }
