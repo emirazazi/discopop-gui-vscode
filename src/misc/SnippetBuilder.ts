@@ -15,6 +15,12 @@ export default class SnippetBuilder {
 
         result = SnippetBuilder.appendReduction(result, recommendation.reduction)
 
+        if (!result) {
+            return ""
+        }
+
+        result += "\n"
+
         return result
     }
 
