@@ -184,10 +184,11 @@ export function activate(context: vscode.ExtensionContext) {
 			progress.report({ increment: 0 });
 
 			const patternidRunner = new PatternIdentification(context);
-			//patternidRunner.setFiles(treeDataProvider.getActiveFiles())
 			await patternidRunner.executeDefault();
 
 			vscode.commands.executeCommand(Commands.applyResultsToTreeView);
+
+			codeLensProvider._onDidChangeCodeLenses.fire();
 
 			progress.report({ increment: 100 });
 		});

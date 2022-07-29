@@ -13,7 +13,7 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
     private codeLenses: vscode.CodeLens[] = [];
 
     private recommendations: IDoAll[] | IReduction[];
-    private _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
+    public _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
     public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event;
 
     constructor(context) {
