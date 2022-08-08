@@ -1,5 +1,4 @@
-import { IDoAll, IReduction } from "./DiscoPoPParser";
-
+import { IDoAll, IReduction } from './DiscoPoPParser'
 
 export default class SnippetBuilder {
     public static buildSnippet(recommendation: IDoAll | IReduction): string {
@@ -7,19 +6,28 @@ export default class SnippetBuilder {
 
         result = SnippetBuilder.appendPrivate(result, recommendation.priv)
 
-        result = SnippetBuilder.appendFirstPrivate(result, recommendation.firstPrivate)
+        result = SnippetBuilder.appendFirstPrivate(
+            result,
+            recommendation.firstPrivate
+        )
 
-        result = SnippetBuilder.appendLastPrivate(result, recommendation.lastPrivate)
+        result = SnippetBuilder.appendLastPrivate(
+            result,
+            recommendation.lastPrivate
+        )
 
         result = SnippetBuilder.appendShared(result, recommendation.shared)
 
-        result = SnippetBuilder.appendReduction(result, recommendation.reduction)
+        result = SnippetBuilder.appendReduction(
+            result,
+            recommendation.reduction
+        )
 
         if (!result) {
-            return ""
+            return ''
         }
 
-        result += "\n"
+        result += '\n'
 
         return result
     }

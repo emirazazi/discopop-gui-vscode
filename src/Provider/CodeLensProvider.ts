@@ -1,45 +1,57 @@
-import * as vscode from 'vscode';
-import { CancellationToken, CodeLens, Command, Position, Range, SnippetString, TextDocument, window } from 'vscode';
-import { Commands } from '../Commands';
-import { Config } from '../Config';
-import { IDoAll, IReduction } from '../misc/DiscoPoPParser';
-import SnippetBuilder from '../misc/SnippetBuilder';
-import { StateManager } from '../misc/StateManager';
-import { ResultStatus } from '../ResultStatus';
-import { ResultType } from '../ResultType';
+import * as vscode from 'vscode'
+import {
+    CancellationToken,
+    CodeLens,
+    Command,
+    Position,
+    Range,
+    SnippetString,
+    TextDocument,
+    window,
+} from 'vscode'
+import { Commands } from '../Commands'
+import { Config } from '../Config'
+import { IDoAll, IReduction } from '../misc/DiscoPoPParser'
+import SnippetBuilder from '../misc/SnippetBuilder'
+import { StateManager } from '../misc/StateManager'
+import { ResultStatus } from '../ResultStatus'
+import { ResultType } from '../ResultType'
 
 export default class CodeLensProvider implements vscode.CodeLensProvider {
+    context: vscode.ExtensionContext
+    private codeLenses: vscode.CodeLens[] = []
 
-    context: vscode.ExtensionContext;
-    private codeLenses: vscode.CodeLens[] = [];
-
-    private recommendations: IDoAll[] | IReduction[];
-    public _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
-    public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event;
+    private recommendations: IDoAll[] | IReduction[]
+    public _onDidChangeCodeLenses: vscode.EventEmitter<void> =
+        new vscode.EventEmitter<void>()
+    public readonly onDidChangeCodeLenses: vscode.Event<void> =
+        this._onDidChangeCodeLenses.event
 
     constructor(context) {
-        this.context = context;
+        this.context = context
 
-        this.recommendations = [];
+        this.recommendations = []
 
         vscode.workspace.onDidChangeConfiguration((_) => {
-            this._onDidChangeCodeLenses.fire();
-        });
+            this._onDidChangeCodeLenses.fire()
+        })
     }
 
-    public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
-
+    public provideCodeLenses(
+        document: vscode.TextDocument,
+        token: vscode.CancellationToken
+    ): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
         if (Config.codeLensEnabled) {
-            const stateManager = new StateManager(this.context);
+            const stateManager = new StateManager(this.context)
             const ids = stateManager.read(document.fileName.toString())
 
             if (!ids) {
-                return [];
+                return []
             }
 
-            const parsedIds = JSON.parse(ids);
+            const parsedIds = JSON.parse(ids)
             if (!parsedIds && !parsedIds.length) {
-                return [];
+                return []
             }
 
             console.log(parsedIds)
@@ -48,7 +60,10 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
                 let res = stateManager.read(id)
                 if (res) {
                     let recommendation = JSON.parse(res)
-                    if (recommendation && recommendation.status !== ResultStatus.Applied) {
+                    if (
+                        recommendation &&
+                        recommendation.status !== ResultStatus.Applied
+                    ) {
                         return recommendation
                     }
                 }
@@ -56,63 +71,74 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
             })
 
             if (!this.recommendations) {
-                return [];
+                return []
             }
 
-            this.recommendations = this.recommendations.filter((elem) => elem?.id);
+            this.recommendations = this.recommendations.filter(
+                (elem) => elem?.id
+            )
 
-            this.codeLenses = this.recommendations.map((recommendation) => this.buildCodeLens(recommendation))
+            this.codeLenses = this.recommendations.map((recommendation) =>
+                this.buildCodeLens(recommendation)
+            )
 
-            return this.codeLenses;
+            return this.codeLenses
         }
-        return [];
+        return []
     }
 
-    public resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken) {
+    public resolveCodeLens(
+        codeLens: vscode.CodeLens,
+        token: vscode.CancellationToken
+    ) {
         if (Config.codeLensEnabled) {
-            return codeLens;
+            return codeLens
         }
-        return null;
+        return null
     }
 
     public buildCodeLens(result) {
-
-        const position = new vscode.Position(result.startLine - 1, 0);
+        const position = new vscode.Position(result.startLine - 1, 0)
         const range = new Range(position, position)
 
-        const typeText = result.resultType === ResultType.DoAll ? "Do All" : "Reduction"
+        const typeText =
+            result.resultType === ResultType.DoAll ? 'Do All' : 'Reduction'
 
         const codeLens = new vscode.CodeLens(range, {
             title: `${typeText} recommended with pragma: ${result.pragma}. Click to insert.`,
-            command: "discopop.codelensAction",
-            arguments: [result.id]
+            command: 'discopop.codelensAction',
+            arguments: [result.id],
         })
 
         return codeLens
     }
     public insertRecommendation = async (recommendationId) => {
-        let recommendation = this.recommendations?.find((elem) => elem.id === recommendationId)
+        let recommendation = this.recommendations?.find(
+            (elem) => elem.id === recommendationId
+        )
 
         if (!recommendation) {
             return
         }
 
         if (recommendation.resultType === ResultType.DoAll) {
-            this.insertDoAll(recommendation);
+            this.insertDoAll(recommendation)
         }
 
         if (recommendation.resultType === ResultType.Reduction) {
-            this.insertReduction(recommendation);
+            this.insertReduction(recommendation)
         }
 
-        this.moveOtherRecommendations(recommendation);
+        this.moveOtherRecommendations(recommendation)
 
-        recommendation.status = ResultStatus.Applied;
+        recommendation.status = ResultStatus.Applied
 
-        const stateManager = new StateManager(this.context);
-        stateManager.save(recommendation.id, JSON.stringify(recommendation));
+        const stateManager = new StateManager(this.context)
+        stateManager.save(recommendation.id, JSON.stringify(recommendation))
 
-        vscode.commands.executeCommand(Commands.sendToDetail, [recommendation.id])
+        vscode.commands.executeCommand(Commands.sendToDetail, [
+            recommendation.id,
+        ])
     }
 
     private moveOtherRecommendations = (removedRecommendation) => {
@@ -123,20 +149,23 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
             }
             if (recommendation.startLine > removedRecommendation.startLine) {
                 if (recommendation.startLine) {
-                    recommendation.startLine += 1;
+                    recommendation.startLine += 1
                 }
                 if (recommendation.line) {
-                    recommendation.line += 1;
+                    recommendation.line += 1
                 }
                 if (recommendation.endLine) {
-                    recommendation.endLine += 1;
+                    recommendation.endLine += 1
                 }
                 console.log(recommendation)
-                const stateManager = new StateManager(this.context);
-                stateManager.save(recommendation.id, JSON.stringify(recommendation));
+                const stateManager = new StateManager(this.context)
+                stateManager.save(
+                    recommendation.id,
+                    JSON.stringify(recommendation)
+                )
             }
         })
-        this._onDidChangeCodeLenses.fire();
+        this._onDidChangeCodeLenses.fire()
     }
 
     private insertDoAll = (recommendation) => {
@@ -148,11 +177,14 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
     }
 
     private insertSnippet = (result) => {
-        const editor = vscode.window.activeTextEditor;
+        const editor = vscode.window.activeTextEditor
 
         if (editor) {
-            editor.edit(editBuilder => {
-                editBuilder.insert(new Position(result.startLine - 1, 0), SnippetBuilder.buildSnippet(result));
+            editor.edit((editBuilder) => {
+                editBuilder.insert(
+                    new Position(result.startLine - 1, 0),
+                    SnippetBuilder.buildSnippet(result)
+                )
             })
         }
     }

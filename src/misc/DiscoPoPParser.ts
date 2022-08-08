@@ -1,81 +1,82 @@
-import { StateManager } from "./StateManager"
-import * as vscode from "vscode";
-import { StorageManager } from "./StorageManager";
-import { ItemType } from "../ItemType";
-import { ResultType } from "../ResultType";
-import { TreeDataProvider, TreeItem } from "../Provider/TreeDataProvider";
-import { TreeItemCollapsibleState } from "vscode";
-import { ObjectID } from "bson";
-import { Commands } from "../Commands";
-import { TreeUtils } from "../TreeUtils";
-import { Config } from "../Config";
-import { ResultStatus } from "../ResultStatus";
-
+import { StateManager } from './StateManager'
+import * as vscode from 'vscode'
+import { StorageManager } from './StorageManager'
+import { ItemType } from '../ItemType'
+import { ResultType } from '../ResultType'
+import { TreeDataProvider, TreeItem } from '../Provider/TreeDataProvider'
+import { TreeItemCollapsibleState } from 'vscode'
+import { ObjectID } from 'bson'
+import { Commands } from '../Commands'
+import { TreeUtils } from '../TreeUtils'
+import { Config } from '../Config'
+import { ResultStatus } from '../ResultStatus'
 
 interface IBaseResult {
-    id: string,
-    resultType: ResultType,
-    fileId: number,
+    id: string
+    resultType: ResultType
+    fileId: number
 
     status: ResultStatus
 }
 
 export interface IReduction extends IBaseResult {
-    line: number,
-    startLine: number,
-    endLine: number,
-    pragma: string, // maybe this will turn to enum strings or some form of mapping
-    priv: string[],
-    shared: string[],
-    firstPrivate: string[],
-    reduction: string[],
+    line: number
+    startLine: number
+    endLine: number
+    pragma: string // maybe this will turn to enum strings or some form of mapping
+    priv: string[]
+    shared: string[]
+    firstPrivate: string[]
+    reduction: string[]
     lastPrivate: string[]
 }
 
 export interface IDoAll extends IBaseResult {
-    line: number,
-    startLine: number,
-    endLine: number,
-    iterations: number,
-    instructions: number,
-    workload: number,
-    pragma: string,
-    priv: string[],
-    shared: string[],
-    firstPrivate: string[],
-    reduction: string[],
+    line: number
+    startLine: number
+    endLine: number
+    iterations: number
+    instructions: number
+    workload: number
+    pragma: string
+    priv: string[]
+    shared: string[]
+    firstPrivate: string[]
+    reduction: string[]
     lastPrivate: string[]
 }
 
 export default class DiscoPoPParser {
-
-    context: vscode.ExtensionContext;
+    context: vscode.ExtensionContext
 
     treeDataProvider: TreeDataProvider
 
-    treeRoot: TreeItem;
+    treeRoot: TreeItem
 
-    results;
+    results
 
-    constructor(context: vscode.ExtensionContext, treeDataProvider: TreeDataProvider) {
-        this.context = context;
-        this.treeDataProvider = treeDataProvider;
-        this.treeRoot = treeDataProvider.data;
-        this.results = {};
+    constructor(
+        context: vscode.ExtensionContext,
+        treeDataProvider: TreeDataProvider
+    ) {
+        this.context = context
+        this.treeDataProvider = treeDataProvider
+        this.treeRoot = treeDataProvider.data
+        this.results = {}
     }
     parseResultString = async () => {
         // parse discoPoP result from state manager and apply it to eisting treeView
         // the application to the treeview is made through appending them as result nodes
-        const stateManager = new StateManager(this.context);
+        const stateManager = new StateManager(this.context)
 
-        const resultString = stateManager.read('explorerResult');
-        console.log(resultString);
+        const resultString = stateManager.read('explorerResult')
+        console.log(resultString)
 
         /* const storageManager = new StorageManager(this.context, true);
 
         const resultString = await storageManager.readFile("ranked_patterns.txt", true) as any; */
 
-        const lines = resultString.split("\n");
+        const lines = resultString.split('\n')
 
         const reductionRegex = new RegExp('Reduction at')
 
@@ -83,27 +84,26 @@ export default class DiscoPoPParser {
 
         lines.map((element, index, arr) => {
             if (reductionRegex.test(element.toString())) {
-                this.parseReduction(arr, index);
+                this.parseReduction(arr, index)
             }
 
             if (doAllRegex.test(element.toString())) {
-                this.parseDoAll(arr, index);
+                this.parseDoAll(arr, index)
             }
 
             return
-        });
+        })
 
-        this.appendResultsToTree(this.treeRoot);
-        this.treeDataProvider.saveTreeToStateAndRefresh();
+        this.appendResultsToTree(this.treeRoot)
+        this.treeDataProvider.saveTreeToStateAndRefresh()
     }
 
     private appendResultsToTree = (root: TreeItem) => {
         if (root.id && this.results[root.id]?.children?.length > 0) {
+            this.saveIdsToStateManagerToRetrieveInCodeLensProvider(root)
 
-            this.saveIdsToStateManagerToRetrieveInCodeLensProvider(root);
-
-            root.children = this.results[root.id].children;
-            root.collapsibleState = TreeItemCollapsibleState.Expanded;
+            root.children = this.results[root.id].children
+            root.collapsibleState = TreeItemCollapsibleState.Expanded
             return
         }
         if (root.children) {
@@ -114,71 +114,79 @@ export default class DiscoPoPParser {
 
     // todo decouple
     private saveIdsToStateManagerToRetrieveInCodeLensProvider = (root) => {
-        const treePath = TreeUtils.getPathById(this.treeRoot.children, root.id, Config.getWorkspacePath())
+        const treePath = TreeUtils.getPathById(
+            this.treeRoot.children,
+            root.id,
+            Config.getWorkspacePath()
+        )
 
-        const ids = this.results[root.id].children.map((elem) => elem.resultIdentifier);
+        const ids = this.results[root.id].children.map(
+            (elem) => elem.resultIdentifier
+        )
 
-        const stateManager = new StateManager(this.context);
+        const stateManager = new StateManager(this.context)
 
         stateManager.save(treePath, JSON.stringify(ids))
     }
 
     private pushItemToResults = (item, fileId) => {
         if (this.results[fileId] && this.results[fileId].children) {
-            this.results[fileId].children.push(item);
+            this.results[fileId].children.push(item)
         } else {
             this.results[fileId] = {
-                children: [item]
+                children: [item],
             }
         }
     }
 
     private saveResultToState = (result) => {
-        const stateManager = new StateManager(this.context);
+        const stateManager = new StateManager(this.context)
 
-        stateManager.save(result.id, JSON.stringify(result));
+        stateManager.save(result.id, JSON.stringify(result))
     }
 
     private addSendToDetailOnClickCommand = (item, id) => {
         item.command = {
-            title: "Display Result",
+            title: 'Display Result',
             command: Commands.sendToDetail,
-            arguments: [
-                id
-            ]
+            arguments: [id],
         }
     }
 
     private parseDoAll = (lines, index: number) => {
-        const firstLine = lines[index].split(":");
+        const firstLine = lines[index].split(':')
 
-        const fileId = parseInt(firstLine[firstLine.length - 2].substr(1));
+        const fileId = parseInt(firstLine[firstLine.length - 2].substr(1))
 
-        const line = parseInt(firstLine[firstLine.length - 1]);
+        const line = parseInt(firstLine[firstLine.length - 1])
 
-        const startLine = parseInt(lines[index + 1].split(":")[firstLine.length - 1]);
+        const startLine = parseInt(
+            lines[index + 1].split(':')[firstLine.length - 1]
+        )
 
-        const endLine = parseInt(lines[index + 2].split(":")[firstLine.length - 1]);
+        const endLine = parseInt(
+            lines[index + 2].split(':')[firstLine.length - 1]
+        )
 
-        const numberPattern = /\d+/g;
+        const numberPattern = /\d+/g
 
-        const iterations = parseInt(lines[index + 3].match(numberPattern)[0]);
+        const iterations = parseInt(lines[index + 3].match(numberPattern)[0])
 
-        const instructions = parseInt(lines[index + 4].match(numberPattern)[0]);
+        const instructions = parseInt(lines[index + 4].match(numberPattern)[0])
 
-        const workload = parseInt(lines[index + 5].match(numberPattern)[0]);
+        const workload = parseInt(lines[index + 5].match(numberPattern)[0])
 
-        const pragma = this.parseDoAllPragma(lines[index + 6]);
+        const pragma = this.parseDoAllPragma(lines[index + 6])
 
-        const priv = this.parseArray(lines[index + 7]);
+        const priv = this.parseArray(lines[index + 7])
 
-        const shared = this.parseArray(lines[index + 8]);
+        const shared = this.parseArray(lines[index + 8])
 
-        const firstPrivate = this.parseArray(lines[index + 9]);
+        const firstPrivate = this.parseArray(lines[index + 9])
 
-        const reduction = this.parseArray(lines[index + 10]);
+        const reduction = this.parseArray(lines[index + 10])
 
-        const lastPrivate = this.parseArray(lines[index + 11]);
+        const lastPrivate = this.parseArray(lines[index + 11])
 
         const doAllResult: IDoAll = {
             id: new ObjectID().toString(),
@@ -196,44 +204,48 @@ export default class DiscoPoPParser {
             shared,
             firstPrivate,
             reduction,
-            lastPrivate
+            lastPrivate,
         }
 
-        this.saveResultToState(doAllResult);
+        this.saveResultToState(doAllResult)
 
         let treeItem = new TreeItem(`DO ALL`)
 
-        treeItem.contextValue = ItemType.Result;
-        treeItem.collapsibleState = TreeItemCollapsibleState.None;
-        treeItem.resultIdentifier = doAllResult.id;
+        treeItem.contextValue = ItemType.Result
+        treeItem.collapsibleState = TreeItemCollapsibleState.None
+        treeItem.resultIdentifier = doAllResult.id
 
-        this.addSendToDetailOnClickCommand(treeItem, doAllResult.id);
+        this.addSendToDetailOnClickCommand(treeItem, doAllResult.id)
 
-        this.pushItemToResults(treeItem, fileId);
+        this.pushItemToResults(treeItem, fileId)
     }
 
     private parseReduction = (lines, index) => {
-        const firstLine = lines[index].split(":");
+        const firstLine = lines[index].split(':')
 
-        const fileId = parseInt(firstLine[firstLine.length - 2].substr(1));
+        const fileId = parseInt(firstLine[firstLine.length - 2].substr(1))
 
-        const line = parseInt(firstLine[firstLine.length - 1]);
+        const line = parseInt(firstLine[firstLine.length - 1])
 
-        const startLine = parseInt(lines[index + 1].split(":")[firstLine.length - 1]);
+        const startLine = parseInt(
+            lines[index + 1].split(':')[firstLine.length - 1]
+        )
 
-        const endLine = parseInt(lines[index + 2].split(":")[firstLine.length - 1]);
+        const endLine = parseInt(
+            lines[index + 2].split(':')[firstLine.length - 1]
+        )
 
-        const pragma = this.parseReductionPragma(lines[index + 3]);
+        const pragma = this.parseReductionPragma(lines[index + 3])
 
-        const priv = this.parseArray(lines[index + 4]);
+        const priv = this.parseArray(lines[index + 4])
 
-        const shared = this.parseArray(lines[index + 5]);
+        const shared = this.parseArray(lines[index + 5])
 
-        const firstPrivate = this.parseArray(lines[index + 6]);
+        const firstPrivate = this.parseArray(lines[index + 6])
 
-        const reduction = this.parseArray(lines[index + 7]);
+        const reduction = this.parseArray(lines[index + 7])
 
-        const lastPrivate = this.parseArray(lines[index + 8]);
+        const lastPrivate = this.parseArray(lines[index + 8])
 
         const reductionResult: IReduction = {
             id: new ObjectID().toString(),
@@ -248,20 +260,20 @@ export default class DiscoPoPParser {
             shared,
             firstPrivate,
             reduction,
-            lastPrivate
+            lastPrivate,
         }
 
-        this.saveResultToState(reductionResult);
+        this.saveResultToState(reductionResult)
 
         let treeItem = new TreeItem(`REDUCTION`)
 
-        treeItem.contextValue = ItemType.Result;
-        treeItem.collapsibleState = TreeItemCollapsibleState.None;
-        treeItem.resultIdentifier = reductionResult.id;
+        treeItem.contextValue = ItemType.Result
+        treeItem.collapsibleState = TreeItemCollapsibleState.None
+        treeItem.resultIdentifier = reductionResult.id
 
-        this.addSendToDetailOnClickCommand(treeItem, reductionResult.id);
+        this.addSendToDetailOnClickCommand(treeItem, reductionResult.id)
 
-        this.pushItemToResults(treeItem, fileId);
+        this.pushItemToResults(treeItem, fileId)
     }
 
     // !!! CAUTION !!!
@@ -270,24 +282,24 @@ export default class DiscoPoPParser {
     // why you do this to me :(?
     private parseDoAllPragma = (line): string => {
         // match for string which is inside two quotes
-        const regex = new RegExp('\"[^\"]*\"', 'g')
+        const regex = new RegExp('"[^"]*"', 'g')
 
-        const match = line.match(regex);
+        const match = line.match(regex)
 
         if (!match.length) {
-            return ""
+            return ''
         }
 
         return match[0].slice(1, -1)
     }
 
     private parseReductionPragma = (line): string => {
-        const regex = new RegExp('\#(.*)', 'g')
+        const regex = new RegExp('#(.*)', 'g')
 
-        const match = line.match(regex);
+        const match = line.match(regex)
 
         if (!match.length) {
-            return ""
+            return ''
         }
 
         return match[0]
@@ -295,12 +307,12 @@ export default class DiscoPoPParser {
 
     private parseArray = (line): Array<string> => {
         // match for all strings which are inside two single quotes
-        const regex = new RegExp('\'[^\']*\'', 'g')
+        const regex = new RegExp("'[^']*'", 'g')
 
         let result = []
 
         let match
-        while (match = regex.exec(line)) {
+        while ((match = regex.exec(line))) {
             result.push(match[0].slice(1, -1))
         }
 

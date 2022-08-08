@@ -1,26 +1,26 @@
 export class Commands {
+    public static initApplication: string = 'discopop.initApplication'
 
-    public static initApplication: string = 'discopop.initApplication';
+    public static refreshFileMapping: string = 'discopop.refreshFileMapping'
 
-    public static refreshFileMapping: string = 'discopop.refreshFileMapping';
+    public static executeCUGen: string = 'discopop.executeCUGen'
 
-    public static executeCUGen: string = 'discopop.executeCUGen';
+    public static executeDepProf: string = 'discopop.executeDepProf'
 
-    public static executeDepProf: string = 'discopop.executeDepProf';
+    public static executeRedOp: string = 'discopop.executeRedOp'
 
-    public static executeRedOp: string = 'discopop.executeRedOp';
+    public static executePatternId: string = 'discopop.executePatternId'
 
-    public static executePatternId: string = 'discopop.executePatternId';
+    public static applyResultsToTreeView: string =
+        'discopop.applyResultsToTreeView'
 
-    public static applyResultsToTreeView: string = 'discopop.applyResultsToTreeView';
+    public static sendToDetail: string = 'discopop.sendToDetail'
 
-    public static sendToDetail: string = 'discopop.sendToDetail';
+    public static toggleEntry: string = 'discopop.toggleEntry'
 
-    public static toggleEntry: string = 'discopop.toggleEntry';
+    public static toggleFolder: string = 'discopop.toggleFolder'
 
-    public static toggleFolder: string = 'discopop.toggleFolder';
+    public static enableCodeLens: string = 'discopop.enableCodeLens'
 
-    public static enableCodeLens: string = 'discopop.enableCodeLens';
-
-    public static disableCodeLens: string = 'discopop.disableCodeLens';
+    public static disableCodeLens: string = 'discopop.disableCodeLens'
 }

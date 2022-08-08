@@ -1,39 +1,38 @@
-import * as vscode from 'vscode';
-import { TreeItem } from '../Provider/TreeDataProvider';
+import * as vscode from 'vscode'
+import { TreeItem } from '../Provider/TreeDataProvider'
 
 export enum ExecutionModes {
-    "default" = "DEFAULT",
-    "makefile" = "MAKEFILE"
+    'default' = 'DEFAULT',
+    'makefile' = 'MAKEFILE',
 }
 
 export abstract class TaskExecuter {
+    context: vscode.ExtensionContext // needed to retrieve workspace folder
+    mode: ExecutionModes = ExecutionModes.default
+    onDone: Function
 
-    context: vscode.ExtensionContext; // needed to retrieve workspace folder
-    mode: ExecutionModes = ExecutionModes.default;
-    onDone: Function;
+    files: TreeItem[]
 
-    files: TreeItem[];
-
-    re = new RegExp(/[^\\\/]+(?=\.[\w]+$)|[^\\\/]+$/g);
+    re = new RegExp(/[^\\\/]+(?=\.[\w]+$)|[^\\\/]+$/g)
 
     constructor(context: vscode.ExtensionContext, onDone?: Function) {
-        this.context = context;
-        this.onDone = onDone;
+        this.context = context
+        this.onDone = onDone
     }
 
     public setExecutionMode(mode: ExecutionModes): void {
-        this.mode = mode;
+        this.mode = mode
     }
 
     public setFiles(files: any) {
-        this.files = files;
+        this.files = files
     }
 
     public execute() {
         if (this.mode === ExecutionModes.default) {
-            this.executeDefault();
+            this.executeDefault()
         } else {
-            this.executeMakefile();
+            this.executeMakefile()
         }
     }
 

@@ -1,11 +1,11 @@
-import * as fs from 'fs';
-import * as mkdirp from 'mkdirp';
-import { PathLike } from 'fs';
-import * as vscode from 'vscode';
-import Utils from '../Utils';
+import * as fs from 'fs'
+import * as mkdirp from 'mkdirp'
+import { PathLike } from 'fs'
+import * as vscode from 'vscode'
+import Utils from '../Utils'
 
 export class StorageManager {
-    path: any;
+    path: any
 
     constructor(context: vscode.ExtensionContext, useWorkspace?: boolean) {
         this.path = Utils.hiddenStorage(context)
@@ -17,58 +17,74 @@ export class StorageManager {
     readFile(fileName: string, asString?: boolean): Promise<Buffer | String> {
         return new Promise((res, rej) => {
             if (!this.path || !fs.existsSync(this.path as PathLike)) {
-                rej();
-                return;
+                rej()
+                return
             }
             if (asString) {
-                res(fs.readFileSync((this.path + "/" + fileName) as PathLike, 'utf-8'));
+                res(
+                    fs.readFileSync(
+                        (this.path + '/' + fileName) as PathLike,
+                        'utf-8'
+                    )
+                )
             }
 
-            return;
-        });
+            return
+        })
     }
 
     writeToFile(fileName: string, object: any) {
         return new Promise((res, rej) => {
             // do I need here || !fs.existsSync(this.path as PathLike) too?
             if (!this.path) {
-                rej();
-                return;
+                rej()
+                return
             }
-            const path = this.path + "/" + fileName;
+            const path = this.path + '/' + fileName
             if (fs.existsSync(path)) {
-                res(fs.writeFileSync(path, JSON.stringify(object), { encoding: 'utf8', flag: 'w' }));
-                return;
+                res(
+                    fs.writeFileSync(path, JSON.stringify(object), {
+                        encoding: 'utf8',
+                        flag: 'w',
+                    })
+                )
+                return
             }
 
-            res(mkdirp(path).then(() => {
-                fs.writeFileSync(path, JSON.stringify(object), { encoding: 'utf8', flag: 'w' });
-                return;
-            }));
-
-        });
+            res(
+                mkdirp(path).then(() => {
+                    fs.writeFileSync(path, JSON.stringify(object), {
+                        encoding: 'utf8',
+                        flag: 'w',
+                    })
+                    return
+                })
+            )
+        })
     }
 
     // returns path of file location
     copyToStorage(from: string, destFileName: string) {
         return new Promise<string>(async (res, rej) => {
-            if (!this.path
-                || !fs.existsSync(from as PathLike)) {
-                rej();
-                return;
+            if (!this.path || !fs.existsSync(from as PathLike)) {
+                rej()
+                return
             }
 
-            const destination = this.path + "/" + destFileName
+            const destination = this.path + '/' + destFileName
 
-            await mkdirp(this.path);
+            await mkdirp(this.path)
 
             fs.copyFile(from, destination, (err) => {
                 if (err) {
-                    console.log(`Error on copying file ${from} with error message: ` + err)
+                    console.log(
+                        `Error on copying file ${from} with error message: ` +
+                            err
+                    )
                     rej()
                 }
-                res(destination);
-            });
-        });
+                res(destination)
+            })
+        })
     }
 }

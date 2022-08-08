@@ -1,6 +1,5 @@
-
 export enum ItemType {
-  File = 'file',
-  Folder = 'folder',
-  Result = 'result'
+    File = 'file',
+    Folder = 'folder',
+    Result = 'result',
 }
