@@ -42,10 +42,14 @@ export class DepProfiling extends TaskExecuter {
 
                 console.log('Instrumenting DepProf...')
 
-                await new Promise<void>((resolve) => {
+                await new Promise<void>((resolve, reject) => {
                     exec(command2, options, (err) => {
                         if (err) {
                             console.log(`error: ${err.message}`)
+                            vscode.window.showErrorMessage(
+                                `Dependency Profiling failed with error message ${err.message}`
+                            )
+                            reject()
                             return
                         }
                         console.log('Instrumenting DepProf done!')
@@ -74,7 +78,7 @@ export class DepProfiling extends TaskExecuter {
             }
             return prev
         }, '')
-        await new Promise<void>((resolve) => {
+        await new Promise<void>((resolve, reject) => {
             console.log('Linking DepProf...')
 
             // $CLANG++ ${src_file}_dp.ll -o dp_run -L${DISCOPOP_BUILD}/rtlib -lDiscoPoP_RT -lpthread
@@ -83,6 +87,10 @@ export class DepProfiling extends TaskExecuter {
             exec(command3, options, (err) => {
                 if (err) {
                     console.log(`error: ${err.message}`)
+                    vscode.window.showErrorMessage(
+                        `Dependency Profiling failed with error message ${err.message}`
+                    )
+                    reject()
                     return
                 }
                 console.log('Linking done!')
@@ -94,7 +102,7 @@ export class DepProfiling extends TaskExecuter {
 
     // (Command 4: Executing the program to obtain data dependences)
     async executeDpRun(): Promise<void> {
-        await new Promise<void>(async (resolve) => {
+        await new Promise<void>(async (resolve, reject) => {
             console.log('Profiling...')
             const options = this.getOptions()
 
@@ -109,6 +117,10 @@ export class DepProfiling extends TaskExecuter {
             exec(command4, options, (err) => {
                 if (err) {
                     console.log(`error: ${err.message}`)
+                    vscode.window.showErrorMessage(
+                        `Dependency Profiling failed with error message ${err.message}`
+                    )
+                    reject()
                     return
                 }
                 console.log('Profiler done!')

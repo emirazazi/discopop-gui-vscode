@@ -7,6 +7,7 @@ import { StateManager } from '../misc/StateManager'
 import mkdirp = require('mkdirp')
 import Utils from '../Utils'
 import { TreeItem } from '../Provider/TreeDataProvider'
+import { rejects } from 'assert'
 
 export class CUGen extends TaskExecuter {
     constructor(context: vscode.ExtensionContext, onDone?: Function) {
@@ -55,10 +56,14 @@ export class CUGen extends TaskExecuter {
 
         const executeString = `${Config.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -fno-discard-value-names -Xclang -load -Xclang ${Config.discopopBuild}/libi/LLVMCUGeneration.so -mllvm -fm-path -mllvm ./FileMapping.txt -o dp_cu_${file.name}.ll -c ${file.path}`
 
-        await new Promise<void>((resolve) => {
+        await new Promise<void>((resolve, reject) => {
             exec(executeString, options, (err, stdout, stderr) => {
                 if (err) {
                     console.log(`error: ${err.message}`)
+                    vscode.window.showErrorMessage(
+                        `CU Generation failed with error message ${err.message}`
+                    )
+                    reject()
                     return
                 }
                 resolve()
