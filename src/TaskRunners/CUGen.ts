@@ -38,15 +38,6 @@ export class CUGen extends TaskExecuter {
         if (fs.existsSync(`${options.cwd}/Data.xml`)) {
             vscode.window.showInformationMessage('CUGen done for all files.')
         }
-
-        /* if (fs.existsSync(`${options.cwd}/Data.xml`)) {
-            const xmlString = fs.readFileSync(`${options.cwd}/Data.xml`).toString();
-
-            const stateManager = new StateManager(this.context);
-            stateManager.save('dataxmlstring', xmlString);
-
-            vscode.window.showInformationMessage("CUGen done for all files.")
-        } */
     }
 
     async runTask(file, options) {
