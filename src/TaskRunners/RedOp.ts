@@ -21,40 +21,40 @@ export class RedOp extends TaskExecuter {
 
     // (Command 5: Instrumenting loops with the LLVM pass which detects reduction pattern )
     async executeDefault(): Promise<void> {
-        await Promise.all(
-            this.files.map(async (file: TreeItem) => {
-                if (file.path.endsWith('.h')) {
+        const options = this.getOptions()
+
+        await mkdirp(options.cwd)
+
+        const starterPromise = Promise.resolve(null)
+        await this.files.reduce(
+            (p, file) => p.then(() => this.runTask(file, options).then()),
+            starterPromise
+        )
+    }
+
+    async runTask(file, options) {
+        // $CLANG -g -O0 -S -emit-llvm -fno-discard-value-names \
+        // -Xclang -load -Xclang ${DISCOPOP_BUILD}/libi/LLVMDPReduction.so \
+        // -mllvm -fm-path -mllvm ./FileMapping.txt \
+        // -I $include_dir -o ${src_file}_red.bc $src_file
+        const command5 = `${Config.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -S -emit-llvm -fno-discard-value-names -Xclang -load -Xclang ${Config.discopopBuild}/libi/LLVMDPReduction.so -mllvm -fm-path -mllvm ./FileMapping.txt -o dp_red_${file.name}.ll -c ${file.path}`
+
+        console.log('Instrumenting RedOp...')
+        await new Promise<void>((resolve, reject) => {
+            exec(command5, options, (err) => {
+                if (err) {
+                    console.log(`error: ${err.message}`)
+                    vscode.window.showErrorMessage(
+                        `Pattern Detection failed with error message ${err.message}`
+                    )
+                    reject()
                     return
                 }
-
-                const options = this.getOptions()
-
-                await mkdirp(options.cwd)
-
-                // $CLANG -g -O0 -S -emit-llvm -fno-discard-value-names \
-                // -Xclang -load -Xclang ${DISCOPOP_BUILD}/libi/LLVMDPReduction.so \
-                // -mllvm -fm-path -mllvm ./FileMapping.txt \
-                // -I $include_dir -o ${src_file}_red.bc $src_file
-                const command5 = `${Config.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -S -emit-llvm -fno-discard-value-names -Xclang -load -Xclang ${Config.discopopBuild}/libi/LLVMDPReduction.so -mllvm -fm-path -mllvm ./FileMapping.txt -o dp_red_${file.name}.ll -c ${file.path}`
-
-                console.log('Instrumenting RedOp...')
-                await new Promise<void>((resolve, reject) => {
-                    exec(command5, options, (err) => {
-                        if (err) {
-                            console.log(`error: ${err.message}`)
-                            vscode.window.showErrorMessage(
-                                `Pattern Detection failed with error message ${err.message}`
-                            )
-                            reject()
-                            return
-                        }
-                        console.log('Instrumenting RedOp done!')
-                        resolve()
-                        return
-                    })
-                })
+                console.log('Instrumenting RedOp done!')
+                resolve()
+                return
             })
-        )
+        })
     }
 
     // (Command 6: Linking the instrumented loops with DiscoPoP runtime libraries for the reduction detection)
