@@ -128,6 +128,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             Commands.refreshFileMapping,
             async () => {
+                codeLensProvider.hideCodeLenses()
                 if (
                     fs.existsSync(
                         `${Utils.hiddenStorage(context)}/FileMapping.txt`
@@ -150,6 +151,7 @@ export function activate(context: vscode.ExtensionContext) {
     // EXECUTE CU GEN
     context.subscriptions.push(
         vscode.commands.registerCommand(Commands.executeCUGen, async () => {
+            codeLensProvider.hideCodeLenses()
             vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
@@ -178,6 +180,7 @@ export function activate(context: vscode.ExtensionContext) {
     // EXECUTE DEP PROF
     context.subscriptions.push(
         vscode.commands.registerCommand(Commands.executeDepProf, async () => {
+            codeLensProvider.hideCodeLenses()
             vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
@@ -209,6 +212,7 @@ export function activate(context: vscode.ExtensionContext) {
     // EXECUTE RED OP
     context.subscriptions.push(
         vscode.commands.registerCommand(Commands.executeRedOp, async () => {
+            codeLensProvider.hideCodeLenses()
             vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
@@ -256,6 +260,7 @@ export function activate(context: vscode.ExtensionContext) {
                         Commands.applyResultsToTreeView
                     )
 
+                    codeLensProvider.unhideCodeLenses()
                     codeLensProvider._onDidChangeCodeLenses.fire()
 
                     progress.report({ increment: 100 })

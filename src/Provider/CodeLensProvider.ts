@@ -21,6 +21,8 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
     context: vscode.ExtensionContext
     private codeLenses: vscode.CodeLens[] = []
 
+    private hidden: boolean = true
+
     private recommendations: IDoAll[] | IReduction[]
     public _onDidChangeCodeLenses: vscode.EventEmitter<void> =
         new vscode.EventEmitter<void>()
@@ -37,11 +39,19 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
         })
     }
 
+    public hideCodeLenses() {
+        this.hidden = true
+    }
+
+    public unhideCodeLenses() {
+        this.hidden = false
+    }
+
     public provideCodeLenses(
         document: vscode.TextDocument,
         token: vscode.CancellationToken
     ): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
-        if (Config.codeLensEnabled) {
+        if (Config.codeLensEnabled && !this.hidden) {
             const stateManager = new StateManager(this.context)
             const ids = stateManager.read(document.fileName.toString())
 
