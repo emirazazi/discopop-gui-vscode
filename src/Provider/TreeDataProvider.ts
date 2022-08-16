@@ -62,7 +62,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
             )
         }
 
-        element.iconPath = Utils.getIcon(element)
+        element.iconPath = Utils.getIcon(element, this._context)
 
         return element
     }
