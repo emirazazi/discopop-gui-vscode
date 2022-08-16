@@ -43,21 +43,17 @@ export default class Utils {
         return clArgs
     }
 
-    public static getIcon(item: TreeItem): any {
+    public static getIcon(item: TreeItem, context): any {
         const nodeType = item.contextValue
         if (nodeType === ItemType.File && item.active) {
             return {
-                light: path.join(
-                    __filename,
-                    '..',
-                    '..',
+                light: vscode.Uri.joinPath(
+                    context.extensionUri,
                     'media',
                     'file_active_light.svg'
                 ),
-                dark: path.join(
-                    __filename,
-                    '..',
-                    '..',
+                dark: vscode.Uri.joinPath(
+                    context.extensionUri,
                     'media',
                     'file_active_dark.svg'
                 ),
