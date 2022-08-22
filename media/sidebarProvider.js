@@ -27,6 +27,10 @@
         onExecutePatternId();
     });
 
+    document.querySelector('.execute-all').addEventListener('click', () => {
+        onExecuteAll();
+    });
+
     // Handle messages sent from the extension to the webview
     window.addEventListener('message', event => {
         const message = event.data; // The json data that the extension sent
@@ -58,6 +62,10 @@
 
     function onExecutePatternId() {
         vscode.postMessage({type: 'executePatternId'})
+    }
+
+    function onExecuteAll() {
+        vscode.postMessage({type: 'executeAll'})
     }
 
     function showDone() {

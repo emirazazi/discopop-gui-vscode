@@ -94,6 +94,11 @@
         "category": "DiscoPoP"
       },
       {
+        "title": "Execute All Tasks",
+        "command": "discopop.executeAll",
+        "category": "DiscoPoP"
+      },
+      {
         "title": "Apply Results to TreeView",
         "command": "discopop.applyResultsToTreeView",
         "category": "DiscoPoP"

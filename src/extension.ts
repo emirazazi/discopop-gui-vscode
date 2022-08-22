@@ -281,6 +281,49 @@ export function activate(context: vscode.ExtensionContext) {
             }
         )
     )
+
+    // EXECUTE ALL
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            Commands.executeAll,
+            async () => {
+                // CUGEN
+                const cugenRunner = new CUGen(context)
+                    const files = treeDataProvider.getActiveFiles()
+                    if (!files || !files?.length) {
+                        vscode.window.showInformationMessage(
+                            'Please select at least one file before executing a task!'
+                        )
+                    }
+                    cugenRunner.setFiles(files)
+                    await cugenRunner.executeDefault()
+
+                    // DEP PROF
+                    const depprofRunner = new DepProfiling(context)
+                    depprofRunner.setFiles(files)
+                    await depprofRunner.executeDefault()
+                    await depprofRunner.executeLinking()
+                    await depprofRunner.executeDpRun()
+
+                    const redopRunner = new RedOp(context)
+                    // RED OP
+                    redopRunner.setFiles(files)
+                    await redopRunner.executeDefault()
+                    await redopRunner.linkInstrumentedLoops()
+                    await redopRunner.executeDpRunRed()
+
+                    const patternidRunner = new PatternIdentification(context)
+                    await patternidRunner.executeDefault()
+
+                    vscode.commands.executeCommand(
+                        Commands.applyResultsToTreeView
+                    )
+
+                    codeLensProvider.unhideCodeLenses()
+                    codeLensProvider._onDidChangeCodeLenses.fire()
+            }
+        )
+    )
 }
 
 // this method is called when your extension is deactivated

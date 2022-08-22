@@ -64,6 +64,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     vscode.commands.executeCommand(Commands.executePatternId)
                     break
                 }
+                case 'executeAll': {
+                    vscode.commands.executeCommand(Commands.executeAll)
+                    break
+                }
             }
         })
     }
@@ -109,11 +113,14 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             <body>
                 <div>
                   <div>
-                    <button class="execute-filemapping">Run File Mapping</button>
+                    <button class="execute-filemapping">File Mapping</button>
                   </div>
                   <div>
+                    <button class="execute-all">All Steps</button>
+                  </div> 
+                  <div>
                     <button class="execute-cugen">Generate Computational Units</button>
-                  </div>
+                  </div> 
                   <div>
                     <button class="execute-depprof">Profile Data Dependencies</button>
                   </div>
@@ -122,7 +129,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                   </div>
                   <div>
                     <button class="execute-patternid">Identify Parallel Patterns</button>
-                  </div>    
+                  </div>  
                 </div>
                 
                 <script nonce="${nonce}" src="${scriptUri}"></script>
