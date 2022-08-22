@@ -9,12 +9,15 @@ import { PatternIdentification } from './TaskRunners/PatternIdentification'
 import { RedOp } from './TaskRunners/RedOp'
 import { StorageManager } from './misc/StorageManager'
 import { SidebarProvider } from './Provider/SidebarProvider'
+import { ScriptProvider } from './Provider/ScriptProvider'
 import { TreeDataProvider, TreeItem } from './Provider/TreeDataProvider'
 import Utils from './Utils'
 import CodeLensProvider from './Provider/CodeLensProvider'
 import { StateManager } from './misc/StateManager'
 import DiscoPoPParser from './misc/DiscoPoPParser'
 import { DetailViewProvider } from './Provider/DetailViewProvider'
+import { Config } from './Config'
+import { exec } from 'child_process'
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -26,12 +29,22 @@ export function activate(context: vscode.ExtensionContext) {
 
     // SIDEBAR
     const sidebarProvider = new SidebarProvider(context)
-    context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider(
-            'execution-view',
-            sidebarProvider
+    const scriptProvider = new ScriptProvider(context)
+    if (Config.scriptModeEnabled) {
+        context.subscriptions.push(
+            vscode.window.registerWebviewViewProvider(
+                'execution-view',
+                scriptProvider
+            )
         )
-    )
+    } else {
+        context.subscriptions.push(
+            vscode.window.registerWebviewViewProvider(
+                'execution-view',
+                sidebarProvider
+            )
+        )
+    }
 
     // DETAIL VIEW
     const detailViewProvider = new DetailViewProvider(context)
@@ -129,21 +142,41 @@ export function activate(context: vscode.ExtensionContext) {
             Commands.refreshFileMapping,
             async () => {
                 codeLensProvider.hideCodeLenses()
-                if (
-                    fs.existsSync(
-                        `${Utils.hiddenStorage(context)}/FileMapping.txt`
-                    )
-                ) {
-                    const localSM = new StorageManager(context)
-                    const newFileMapping = (await localSM.readFile(
-                        'FileMapping.txt',
-                        true
-                    )) as string
 
-                    const stateManager = new StateManager(context)
-                    stateManager.save('fileMapping', newFileMapping)
-                    treeDataProvider.reloadFileMappingFromState()
+                if (Config.scriptModeEnabled) {
+                    if (
+                        fs.existsSync(
+                            `${vscode.workspace.workspaceFolders[0].uri.path}/discopop_tmp/FileMapping.txt`
+                        )
+                    ) {
+                        const workspaceSM = new StorageManager(context, true)
+                        const newFileMapping = (await workspaceSM.readFile(
+                            'discopop_tmp/FileMapping.txt',
+                            true
+                        )) as string
+    
+                        const stateManager = new StateManager(context)
+                        stateManager.save('fileMapping', newFileMapping)
+                        treeDataProvider.reloadFileMappingFromState()
+                    }   
+                } else {
+                    if (
+                        fs.existsSync(
+                            `${Utils.hiddenStorage(context)}/FileMapping.txt`
+                        )
+                    ) {
+                        const localSM = new StorageManager(context)
+                        const newFileMapping = (await localSM.readFile(
+                            'FileMapping.txt',
+                            true
+                        )) as string
+    
+                        const stateManager = new StateManager(context)
+                        stateManager.save('fileMapping', newFileMapping)
+                        treeDataProvider.reloadFileMappingFromState()
+                    }
                 }
+                
             }
         )
     )
@@ -282,6 +315,44 @@ export function activate(context: vscode.ExtensionContext) {
         )
     )
 
+    // EXECUTE BY SCRIPT
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            Commands.executeByScript,
+            async () => {
+                detailViewProvider.clearView()
+
+                console.log("EXECUTING BY SCRIPT")
+
+                const scriptPath = await Utils.handleScriptPath(context)
+
+                console.log("AFTER PROMPT")
+
+                await new Promise<void>((resolve, reject) => {
+                    exec(scriptPath, {cwd: vscode.workspace.workspaceFolders[0].uri.path}, (err, stdout, stderr) => {
+                        if (err) {
+                            console.log(`error: ${err.message}`)
+                            vscode.window.showErrorMessage(
+                                `Script execution failed with error message ${err.message}`
+                            )
+                            reject()
+                            return
+                        }
+                        resolve()
+                    })
+                })
+
+                vscode.commands.executeCommand(
+                    Commands.refreshFileMapping
+                )
+
+                vscode.commands.executeCommand(
+                    Commands.applyResultsToTreeView
+                )
+            }
+        )
+    )
+
     // EXECUTE ALL
     context.subscriptions.push(
         vscode.commands.registerCommand(
@@ -314,6 +385,10 @@ export function activate(context: vscode.ExtensionContext) {
 
                     const patternidRunner = new PatternIdentification(context)
                     await patternidRunner.executeDefault()
+
+                    vscode.commands.executeCommand(
+                        Commands.refreshFileMapping
+                    )
 
                     vscode.commands.executeCommand(
                         Commands.applyResultsToTreeView

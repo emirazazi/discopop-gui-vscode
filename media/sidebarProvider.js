@@ -31,6 +31,10 @@
         onExecuteAll();
     });
 
+    document.querySelector('.execute-script').addEventListener('click', () => {
+        onExecuteScript();
+    })
+
     // Handle messages sent from the extension to the webview
     window.addEventListener('message', event => {
         const message = event.data; // The json data that the extension sent
@@ -66,6 +70,10 @@
 
     function onExecuteAll() {
         vscode.postMessage({type: 'executeAll'})
+    }
+
+    function onExecuteScript() {
+        vscode.postMessage({type: 'executeScript'})
     }
 
     function showDone() {

@@ -67,14 +67,20 @@ export default class DiscoPoPParser {
     parseResultString = async () => {
         // parse discoPoP result from state manager and apply it to eisting treeView
         // the application to the treeview is made through appending them as result nodes
-        const stateManager = new StateManager(this.context)
 
-        const resultString = stateManager.read('explorerResult')
+        let resultString = ""
+
+        if (Config.scriptModeEnabled) {
+            const storageManager = new StorageManager(this.context, true);
+
+            resultString = await storageManager.readFile("discopop_tmp/ranked_patterns.txt", true) as any;
+        } else {
+            const stateManager = new StateManager(this.context)
+
+            resultString = stateManager.read('explorerResult')
+        }
+
         console.log(resultString)
-
-        /* const storageManager = new StorageManager(this.context, true);
-
-        const resultString = await storageManager.readFile("ranked_patterns.txt", true) as any; */
 
         const lines = resultString.split('\n')
 
