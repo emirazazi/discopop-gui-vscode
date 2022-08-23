@@ -5,6 +5,7 @@ import { StateManager } from '../misc/StateManager'
 import { TreeUtils } from '../TreeUtils'
 import { Config } from '../Config'
 import Utils from '../Utils'
+import { ResultType } from '../ResultType'
 
 export class TreeItem extends vscode.TreeItem {
     children: TreeItem[] | undefined
@@ -14,6 +15,8 @@ export class TreeItem extends vscode.TreeItem {
     active?: boolean
 
     resultIdentifier?: string
+    startLine?: number
+    resultType?: ResultType
 
     constructor(label: string, children?: TreeItem[]) {
         super(label)
@@ -181,5 +184,24 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
         }
 
         this.setFileMapping(fileMappingString)
+    }
+
+    public moveOtherRecommendations(recommendationId, fileId, startLine, resultType) {
+        console.log(`fileId: ${fileId}`)
+        console.log(this.data)
+        const item = TreeUtils.getChildById(this.data, fileId.toString())
+
+        console.log(item)
+
+        item.children = item.children.map((result) => {
+            if (result.resultIdentifier !== recommendationId && result.startLine > startLine) {
+                result.startLine += 1
+                result.label = Utils.getResultLabel(resultType, result.startLine)
+                return result
+            }
+            return result
+        })
+
+        this.saveTreeToStateAndRefresh()
     }
 }

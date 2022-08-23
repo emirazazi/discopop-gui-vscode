@@ -115,8 +115,9 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand(
             'discopop.codelensAction',
-            (lineNumber) => {
-                codeLensProvider.insertRecommendation(lineNumber)
+            (recommendationId, fileId, startLine, resultType) => {
+                codeLensProvider.insertRecommendation(recommendationId)
+                treeDataProvider.moveOtherRecommendations(recommendationId, fileId, startLine, resultType)
             }
         )
     )
@@ -341,8 +342,10 @@ export function activate(context: vscode.ExtensionContext) {
                 })
             }
 
+            // Refresh file mapping here to apply results correctly to the tree view
             vscode.commands.executeCommand(Commands.refreshFileMapping)
 
+            // Can't build codelenses without paths retrieved by treeDataProvider
             vscode.commands.executeCommand(Commands.applyResultsToTreeView)
 
             codeLensProvider.unhideCodeLenses()

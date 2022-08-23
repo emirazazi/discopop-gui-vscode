@@ -4,6 +4,7 @@ import { Config } from './Config'
 import { ItemType } from './ItemType'
 import { StateManager } from './misc/StateManager'
 import { TreeItem } from './Provider/TreeDataProvider'
+import { ResultType } from './ResultType'
 
 export default class Utils {
     static getCWD = (context: vscode.ExtensionContext) => {
@@ -103,5 +104,14 @@ export default class Utils {
             return new vscode.ThemeIcon('folder')
         }
         return null
+    }
+
+    public static getResultLabel(resultType: ResultType, line) {
+        if (resultType === ResultType.DoAll) {
+            return `DOALL AT ${line}`
+        }
+        if (resultType === ResultType.Reduction) {
+            return `REDUCTION AT ${line}`
+        }
     }
 }

@@ -10,6 +10,7 @@ import { Commands } from '../Commands'
 import { TreeUtils } from '../TreeUtils'
 import { Config } from '../Config'
 import { ResultStatus } from '../ResultStatus'
+import Utils from '../Utils'
 
 interface IBaseResult {
     id: string
@@ -215,11 +216,13 @@ export default class DiscoPoPParser {
 
         this.saveResultToState(doAllResult)
 
-        let treeItem = new TreeItem(`DO ALL`)
+        let treeItem = new TreeItem(Utils.getResultLabel(doAllResult.resultType, doAllResult.startLine))
+
 
         treeItem.contextValue = ItemType.Result
         treeItem.collapsibleState = TreeItemCollapsibleState.None
         treeItem.resultIdentifier = doAllResult.id
+        treeItem.startLine = doAllResult.startLine
 
         this.addSendToDetailOnClickCommand(treeItem, doAllResult.id)
 
@@ -271,11 +274,12 @@ export default class DiscoPoPParser {
 
         this.saveResultToState(reductionResult)
 
-        let treeItem = new TreeItem(`REDUCTION`)
+        let treeItem = new TreeItem(Utils.getResultLabel(reductionResult.resultType, reductionResult.startLine))
 
         treeItem.contextValue = ItemType.Result
         treeItem.collapsibleState = TreeItemCollapsibleState.None
         treeItem.resultIdentifier = reductionResult.id
+        treeItem.startLine = reductionResult.startLine
 
         this.addSendToDetailOnClickCommand(treeItem, reductionResult.id)
 
