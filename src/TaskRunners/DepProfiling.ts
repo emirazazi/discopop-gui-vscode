@@ -46,6 +46,7 @@ export class DepProfiling extends TaskExecuter {
         const command2 = `${Config.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -S -emit-llvm -fno-discard-value-names -Xclang -load -Xclang ${Config.discopopBuild}/libi/LLVMDPInstrumentation.so -mllvm -fm-path -mllvm ./FileMapping.txt -o dp_inst_${file.name}.ll -c ${file.path}`
 
         console.log('Instrumenting DepProf...')
+        console.log(command2)
 
         await new Promise<void>((resolve, reject) => {
             exec(command2, options, (err) => {
@@ -86,6 +87,7 @@ export class DepProfiling extends TaskExecuter {
 
             // $CLANG++ ${src_file}_dp.ll -o dp_run -L${DISCOPOP_BUILD}/rtlib -lDiscoPoP_RT -lpthread
             const command3 = `${Config.clangPP}${llPaths} -o dp_run -L${Config.discopopBuild}/rtlib -lDiscoPoP_RT -lpthread`
+            console.log(command3)
 
             exec(command3, options, (err) => {
                 if (err) {
@@ -112,6 +114,7 @@ export class DepProfiling extends TaskExecuter {
             const clArgs = await Utils.handleClArgs(this.context)
 
             let command4 = `./dp_run`
+            console.log(command4)
 
             if (clArgs?.length) {
                 command4 += ' ' + clArgs
