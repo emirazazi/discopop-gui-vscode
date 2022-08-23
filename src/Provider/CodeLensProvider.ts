@@ -64,8 +64,6 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
                 return []
             }
 
-            console.log(parsedIds)
-
             this.recommendations = parsedIds.map((id) => {
                 let res = stateManager.read(id)
                 if (res) {
@@ -153,7 +151,6 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
 
     private moveOtherRecommendations = (removedRecommendation) => {
         this.recommendations.map((recommendation) => {
-            console.log(recommendation)
             if (recommendation.id === removedRecommendation.id) {
                 return
             }
@@ -167,7 +164,6 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
                 if (recommendation.endLine) {
                     recommendation.endLine += 1
                 }
-                console.log(recommendation)
                 const stateManager = new StateManager(this.context)
                 stateManager.save(
                     recommendation.id,
