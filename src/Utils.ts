@@ -1,12 +1,20 @@
 import path = require('path')
 import * as vscode from 'vscode'
+import { Config } from './Config'
 import { ItemType } from './ItemType'
 import { StateManager } from './misc/StateManager'
 import { TreeItem } from './Provider/TreeDataProvider'
 
 export default class Utils {
-    static hiddenStorage = (context: vscode.ExtensionContext) => {
+    static getCWD = (context: vscode.ExtensionContext) => {
+        if (Config.cwdWorkspace) {
+            return this.getWorkspacePath() + '/discopop_tmp'
+        }
         return context.storageUri?.path
+    }
+
+    static getWorkspacePath = () => {
+        return vscode.workspace.workspaceFolders[0].uri.path
     }
 
     static getNonce() {
@@ -54,7 +62,7 @@ export default class Utils {
             prompt: 'Please enter the path to the script (This extension expects a FileMapping.txt and ranked_patterns.txt inside a discopop_tmp folder to work): ',
         })
 
-/*         if (!scriptPath?.length) {
+        /*         if (!scriptPath?.length) {
             vscode.window.showErrorMessage(
                 'You need to specify a path to the script'
             )

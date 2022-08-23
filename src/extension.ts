@@ -146,7 +146,7 @@ export function activate(context: vscode.ExtensionContext) {
                 if (Config.scriptModeEnabled) {
                     if (
                         fs.existsSync(
-                            `${vscode.workspace.workspaceFolders[0].uri.path}/discopop_tmp/FileMapping.txt`
+                            `${Utils.getWorkspacePath}/discopop_tmp/FileMapping.txt`
                         )
                     ) {
                         const workspaceSM = new StorageManager(context, true)
@@ -154,15 +154,15 @@ export function activate(context: vscode.ExtensionContext) {
                             'discopop_tmp/FileMapping.txt',
                             true
                         )) as string
-    
+
                         const stateManager = new StateManager(context)
                         stateManager.save('fileMapping', newFileMapping)
                         treeDataProvider.reloadFileMappingFromState()
-                    }   
+                    }
                 } else {
                     if (
                         fs.existsSync(
-                            `${Utils.hiddenStorage(context)}/FileMapping.txt`
+                            `${Utils.getCWD(context)}/FileMapping.txt`
                         )
                     ) {
                         const localSM = new StorageManager(context)
@@ -170,13 +170,12 @@ export function activate(context: vscode.ExtensionContext) {
                             'FileMapping.txt',
                             true
                         )) as string
-    
+
                         const stateManager = new StateManager(context)
                         stateManager.save('fileMapping', newFileMapping)
                         treeDataProvider.reloadFileMappingFromState()
                     }
                 }
-                
             }
         )
     )
@@ -317,16 +316,17 @@ export function activate(context: vscode.ExtensionContext) {
 
     // EXECUTE BY SCRIPT
     context.subscriptions.push(
-        vscode.commands.registerCommand(
-            Commands.executeByScript,
-            async () => {
-                detailViewProvider.clearView()
+        vscode.commands.registerCommand(Commands.executeByScript, async () => {
+            detailViewProvider.clearView()
 
-                const scriptPath = await Utils.handleScriptPath(context)
+            const scriptPath = await Utils.handleScriptPath(context)
 
-                if (scriptPath?.length) {
-                    await new Promise<void>((resolve, reject) => {
-                        exec(scriptPath, {cwd: vscode.workspace.workspaceFolders[0].uri.path}, (err, stdout, stderr) => {
+            if (scriptPath?.length) {
+                await new Promise<void>((resolve, reject) => {
+                    exec(
+                        scriptPath,
+                        { cwd: Utils.getWorkspacePath() },
+                        (err, stdout, stderr) => {
                             if (err) {
                                 console.log(`error: ${err.message}`)
                                 vscode.window.showErrorMessage(
@@ -336,65 +336,56 @@ export function activate(context: vscode.ExtensionContext) {
                                 return
                             }
                             resolve()
-                        })
-                    })
-                }
-
-                vscode.commands.executeCommand(
-                    Commands.refreshFileMapping
-                )
-
-                vscode.commands.executeCommand(
-                    Commands.applyResultsToTreeView
-                )
-
-                codeLensProvider.unhideCodeLenses()
-                codeLensProvider._onDidChangeCodeLenses.fire()
+                        }
+                    )
+                })
             }
-        )
+
+            vscode.commands.executeCommand(Commands.refreshFileMapping)
+
+            vscode.commands.executeCommand(Commands.applyResultsToTreeView)
+
+            codeLensProvider.unhideCodeLenses()
+            codeLensProvider._onDidChangeCodeLenses.fire()
+        })
     )
 
     // EXECUTE ALL
     context.subscriptions.push(
-        vscode.commands.registerCommand(
-            Commands.executeAll,
-            async () => {
-                // CUGEN
-                const cugenRunner = new CUGen(context)
-                    const files = treeDataProvider.getActiveFiles()
-                    if (!files || !files?.length) {
-                        vscode.window.showInformationMessage(
-                            'Please select at least one file before executing a task!'
-                        )
-                    }
-                    cugenRunner.setFiles(files)
-                    await cugenRunner.executeDefault()
-
-                    // DEP PROF
-                    const depprofRunner = new DepProfiling(context)
-                    depprofRunner.setFiles(files)
-                    await depprofRunner.executeDefault()
-                    await depprofRunner.executeLinking()
-                    await depprofRunner.executeDpRun()
-
-                    const redopRunner = new RedOp(context)
-                    // RED OP
-                    redopRunner.setFiles(files)
-                    await redopRunner.executeDefault()
-                    await redopRunner.linkInstrumentedLoops()
-                    await redopRunner.executeDpRunRed()
-
-                    const patternidRunner = new PatternIdentification(context)
-                    await patternidRunner.executeDefault()
-
-                    vscode.commands.executeCommand(
-                        Commands.applyResultsToTreeView
-                    )
-
-                    codeLensProvider.unhideCodeLenses()
-                    codeLensProvider._onDidChangeCodeLenses.fire()
+        vscode.commands.registerCommand(Commands.executeAll, async () => {
+            // CUGEN
+            const cugenRunner = new CUGen(context)
+            const files = treeDataProvider.getActiveFiles()
+            if (!files || !files?.length) {
+                vscode.window.showInformationMessage(
+                    'Please select at least one file before executing a task!'
+                )
             }
-        )
+            cugenRunner.setFiles(files)
+            await cugenRunner.executeDefault()
+
+            // DEP PROF
+            const depprofRunner = new DepProfiling(context)
+            depprofRunner.setFiles(files)
+            await depprofRunner.executeDefault()
+            await depprofRunner.executeLinking()
+            await depprofRunner.executeDpRun()
+
+            const redopRunner = new RedOp(context)
+            // RED OP
+            redopRunner.setFiles(files)
+            await redopRunner.executeDefault()
+            await redopRunner.linkInstrumentedLoops()
+            await redopRunner.executeDpRunRed()
+
+            const patternidRunner = new PatternIdentification(context)
+            await patternidRunner.executeDefault()
+
+            vscode.commands.executeCommand(Commands.applyResultsToTreeView)
+
+            codeLensProvider.unhideCodeLenses()
+            codeLensProvider._onDidChangeCodeLenses.fire()
+        })
     )
 }
 

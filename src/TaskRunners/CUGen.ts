@@ -22,7 +22,7 @@ export class CUGen extends TaskExecuter {
 
     async executeDefault(): Promise<any> {
         const options = {
-            cwd: Utils.hiddenStorage(this.context),
+            cwd: Utils.getCWD(this.context),
         }
 
         await mkdirp(options.cwd)

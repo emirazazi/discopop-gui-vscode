@@ -3,7 +3,7 @@
     "displayName": "discopop-gui",
     "description": "An extension for the Parallelism Discovery tool DiscoPoP.",
     "author": "Emir Azazi",
-    "version": "0.0.4",
+    "version": "0.0.6",
     "publisher": "easoqi",
     "repository": {
         "type": "git",
@@ -73,6 +73,11 @@
                 "discopop.scriptModeEnabled": {
                     "type": "boolean",
                     "default": false
+                },
+                "discopop.cwdWorkspace": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If enabled discopop_tmp inside the workspace will be the working directory"
                 }
             }
         },

@@ -13,6 +13,10 @@ After changing settings a reload of the extension is required -> ctrl/cmd + shif
 
 ## Release Notes
 
-### 0.0.1
+### 0.0.6
+
+Option to set `workspacePath/discopop_tmp` folder als CWD
+
+### 0.0.5
 
 ---

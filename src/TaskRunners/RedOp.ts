@@ -14,7 +14,7 @@ export class RedOp extends TaskExecuter {
 
     getOptions() {
         const options = {
-            cwd: Utils.hiddenStorage(this.context),
+            cwd: Utils.getCWD(this.context),
         }
         return options
     }

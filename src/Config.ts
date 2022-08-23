@@ -47,4 +47,8 @@ export class Config {
     public static scriptModeEnabled: boolean = vscode.workspace
         .getConfiguration('discopop')
         .get('scriptModeEnabled', true)
+
+    public static cwdWorkspace: boolean = vscode.workspace
+        .getConfiguration('discopop')
+        .get('cwdWorkspace', true)
 }

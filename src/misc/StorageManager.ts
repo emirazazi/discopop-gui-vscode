@@ -8,9 +8,9 @@ export class StorageManager {
     path: any
 
     constructor(context: vscode.ExtensionContext, useWorkspace?: boolean) {
-        this.path = Utils.hiddenStorage(context)
+        this.path = Utils.getCWD(context)
         if (useWorkspace) {
-            this.path = vscode.workspace.workspaceFolders[0].uri.path
+            this.path = Utils.getWorkspacePath()
         }
     }
 
