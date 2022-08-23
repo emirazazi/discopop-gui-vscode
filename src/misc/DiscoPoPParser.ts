@@ -61,7 +61,7 @@ export default class DiscoPoPParser {
     ) {
         this.context = context
         this.treeDataProvider = treeDataProvider
-        this.treeRoot = treeDataProvider.data
+        this.treeRoot = treeDataProvider.getCurrentTree()
         this.results = {}
     }
     parseResultString = async () => {
@@ -101,7 +101,7 @@ export default class DiscoPoPParser {
         })
 
         this.appendResultsToTree(this.treeRoot)
-        this.treeDataProvider.saveTreeToStateAndRefresh()
+        this.treeDataProvider.forceTreeState(this.treeRoot)
     }
 
     private appendResultsToTree = (root: TreeItem) => {

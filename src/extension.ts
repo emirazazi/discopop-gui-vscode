@@ -322,25 +322,23 @@ export function activate(context: vscode.ExtensionContext) {
             async () => {
                 detailViewProvider.clearView()
 
-                console.log("EXECUTING BY SCRIPT")
-
                 const scriptPath = await Utils.handleScriptPath(context)
 
-                console.log("AFTER PROMPT")
-
-                await new Promise<void>((resolve, reject) => {
-                    exec(scriptPath, {cwd: vscode.workspace.workspaceFolders[0].uri.path}, (err, stdout, stderr) => {
-                        if (err) {
-                            console.log(`error: ${err.message}`)
-                            vscode.window.showErrorMessage(
-                                `Script execution failed with error message ${err.message}`
-                            )
-                            reject()
-                            return
-                        }
-                        resolve()
+                if (scriptPath?.length) {
+                    await new Promise<void>((resolve, reject) => {
+                        exec(scriptPath, {cwd: vscode.workspace.workspaceFolders[0].uri.path}, (err, stdout, stderr) => {
+                            if (err) {
+                                console.log(`error: ${err.message}`)
+                                vscode.window.showErrorMessage(
+                                    `Script execution failed with error message ${err.message}`
+                                )
+                                reject()
+                                return
+                            }
+                            resolve()
+                        })
                     })
-                })
+                }
 
                 vscode.commands.executeCommand(
                     Commands.refreshFileMapping
@@ -349,6 +347,9 @@ export function activate(context: vscode.ExtensionContext) {
                 vscode.commands.executeCommand(
                     Commands.applyResultsToTreeView
                 )
+
+                codeLensProvider.unhideCodeLenses()
+                codeLensProvider._onDidChangeCodeLenses.fire()
             }
         )
     )
@@ -385,10 +386,6 @@ export function activate(context: vscode.ExtensionContext) {
 
                     const patternidRunner = new PatternIdentification(context)
                     await patternidRunner.executeDefault()
-
-                    vscode.commands.executeCommand(
-                        Commands.refreshFileMapping
-                    )
 
                     vscode.commands.executeCommand(
                         Commands.applyResultsToTreeView

@@ -54,12 +54,12 @@ export default class Utils {
             prompt: 'Please enter the path to the script (This extension expects a FileMapping.txt and ranked_patterns.txt inside a discopop_tmp folder to work): ',
         })
 
-        if (!scriptPath?.length) {
+/*         if (!scriptPath?.length) {
             vscode.window.showErrorMessage(
                 'You need to specify a path to the script'
             )
             return
-        }
+        } */
 
         stateManager.save('scriptPath', scriptPath)
 

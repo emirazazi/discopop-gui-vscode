@@ -111,6 +111,19 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
         return res
     }
 
+    public forceTreeState(treeRoot) {
+        this.data = treeRoot
+        const stateManager = new StateManager(this._context)
+        stateManager.save('tree', JSON.stringify(treeRoot))
+
+        this._onDidChangeTreeData.fire()
+    }
+
+    public getCurrentTree() {
+        this.loadTreeFromState()
+        return this.data
+    }
+
     public saveTreeToStateAndRefresh() {
         const stateManager = new StateManager(this._context)
 
