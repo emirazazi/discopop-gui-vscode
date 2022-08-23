@@ -1,10 +1,8 @@
 import * as vscode from 'vscode'
 import { Commands } from '../Commands'
-import { Config } from '../Config'
-import { FileMapper } from '../TaskRunners/FileMapper'
 import Utils from '../Utils'
 
-export class SidebarProvider implements vscode.WebviewViewProvider {
+export class ScriptProvider implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView
     _doc?: vscode.TextDocument
 
@@ -44,29 +42,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     vscode.window.showErrorMessage(data.value)
                     break
                 }
-                case 'executeFilemapping': {
-                    const fm = new FileMapper(this.context)
-                    fm.execute()
-                    break
-                }
-                case 'executeCUGen': {
-                    vscode.commands.executeCommand(Commands.executeCUGen)
-                    break
-                }
-                case 'executeDepProf': {
-                    vscode.commands.executeCommand(Commands.executeDepProf)
-                    break
-                }
-                case 'executeRedOp': {
-                    vscode.commands.executeCommand(Commands.executeRedOp)
-                    break
-                }
-                case 'executePatternId': {
-                    vscode.commands.executeCommand(Commands.executePatternId)
-                    break
-                }
-                case 'executeAll': {
-                    vscode.commands.executeCommand(Commands.executeAll)
+                case 'executeScript': {
+                    vscode.commands.executeCommand(Commands.executeByScript)
                     break
                 }
             }
@@ -83,7 +60,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             vscode.Uri.joinPath(
                 this._extensionUri,
                 'media',
-                'sidebarProvider.js'
+                'scriptProvider.js'
             )
         )
 
@@ -113,24 +90,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 			</head>
             <body>
                 <div>
-                  <div>
-                    <button class="execute-filemapping">File Mapping</button>
-                  </div>
-                  <div>
-                    <button class="execute-all">All Steps</button>
-                  </div> 
-                  <div>
-                    <button class="execute-cugen">Generate Computational Units</button>
-                  </div> 
-                  <div>
-                    <button class="execute-depprof">Profile Data Dependencies</button>
-                  </div>
-                  <div>
-                    <button class="execute-redop">Detect Reduction Patterns</button>
-                  </div>
-                  <div>
-                    <button class="execute-patternid">Identify Parallel Patterns</button>
-                  </div>  
+                    <button class="execute-script">Execute Script</button>
                 </div>
                 
                 <script nonce="${nonce}" src="${scriptUri}"></script>

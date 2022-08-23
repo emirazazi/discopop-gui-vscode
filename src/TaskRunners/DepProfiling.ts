@@ -23,42 +23,45 @@ export class DepProfiling extends TaskExecuter {
 
     // (Command 2: Instrumenting memory access instructions in a input file)
     async executeDefault(): Promise<void> {
-        await Promise.all(
-            this.files.map(async (file: TreeItem) => {
-                // fail first all header files
-                if (file.path.endsWith('.h')) {
+        const options = this.getOptions()
+
+        await mkdirp(options.cwd)
+
+        const starterPromise = Promise.resolve(null)
+        await this.files.reduce(
+            (p, file) => p.then(() => this.runTask(file, options).then()),
+            starterPromise
+        )
+    }
+
+    async runTask(file, options) {
+        if (file.path.endsWith('.h')) {
+            return
+        }
+
+        // $CLANG -g -O0 -S -emit-llvm -fno-discard-value-names \
+        // -Xclang -load -Xclang ${DISCOPOP_BUILD}/libi/LLVMDPInstrumentation.so \
+        // -mllvm -fm-path -mllvm ./FileMapping.txt \
+        // -I $include_dir -o${src_file}_dp.ll $src_file
+        const command2 = `${Config.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -S -emit-llvm -fno-discard-value-names -Xclang -load -Xclang ${Config.discopopBuild}/libi/LLVMDPInstrumentation.so -mllvm -fm-path -mllvm ./FileMapping.txt -o dp_inst_${file.name}.ll -c ${file.path}`
+
+        console.log('Instrumenting DepProf...')
+
+        await new Promise<void>((resolve, reject) => {
+            exec(command2, options, (err) => {
+                if (err) {
+                    console.log(`error: ${err.message}`)
+                    vscode.window.showErrorMessage(
+                        `Dependency Profiling failed with error message ${err.message}`
+                    )
+                    reject()
                     return
                 }
-
-                const options = this.getOptions()
-
-                await mkdirp(options.cwd)
-
-                // $CLANG -g -O0 -S -emit-llvm -fno-discard-value-names \
-                // -Xclang -load -Xclang ${DISCOPOP_BUILD}/libi/LLVMDPInstrumentation.so \
-                // -mllvm -fm-path -mllvm ./FileMapping.txt \
-                // -I $include_dir -o${src_file}_dp.ll $src_file
-                const command2 = `${Config.clang} -DUSE_MPI=Off -DUSE_OPENMP=Off -g -O0 -S -emit-llvm -fno-discard-value-names -Xclang -load -Xclang ${Config.discopopBuild}/libi/LLVMDPInstrumentation.so -mllvm -fm-path -mllvm ./FileMapping.txt -o dp_inst_${file.name}.ll -c ${file.path}`
-
-                console.log('Instrumenting DepProf...')
-
-                await new Promise<void>((resolve, reject) => {
-                    exec(command2, options, (err) => {
-                        if (err) {
-                            console.log(`error: ${err.message}`)
-                            vscode.window.showErrorMessage(
-                                `Dependency Profiling failed with error message ${err.message}`
-                            )
-                            reject()
-                            return
-                        }
-                        console.log('Instrumenting DepProf done!')
-                        resolve()
-                        return
-                    })
-                })
+                console.log('Instrumenting DepProf done!')
+                resolve()
+                return
             })
-        )
+        })
     }
 
     // (Command 3: Linking instrumented code with DiscoPoP runtime libraries)

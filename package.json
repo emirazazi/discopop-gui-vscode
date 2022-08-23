@@ -64,6 +64,10 @@
         "discopop.recommendationsCodeLens": {
           "type": "boolean",
           "default": false
+        },
+        "discopop.scriptModeEnabled": {
+          "type": "boolean",
+          "default": false
         }
       }
     },
@@ -91,6 +95,11 @@
       {
         "title": "Identify Parallel Patterns",
         "command": "discopop.executePatternId",
+        "category": "DiscoPoP"
+      },
+      {
+        "title": "Execute All Tasks",
+        "command": "discopop.executeAll",
         "category": "DiscoPoP"
       },
       {
@@ -122,6 +131,11 @@
       {
         "title": "Disable Recommendations CodeLens",
         "command": "discopop.disableCodeLens",
+        "category": "DiscoPoP"
+      },
+      {
+        "title": "Execute By Script",
+        "command": "discopop.executeByScript",
         "category": "DiscoPoP"
       }
     ],

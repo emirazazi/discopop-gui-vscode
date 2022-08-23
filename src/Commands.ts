@@ -11,6 +11,10 @@ export class Commands {
 
     public static executePatternId: string = 'discopop.executePatternId'
 
+    public static executeAll: string = 'discopop.executeAll'
+
+    public static executeByScript: string = 'discopop.executeByScript'
+
     public static applyResultsToTreeView: string =
         'discopop.applyResultsToTreeView'
 

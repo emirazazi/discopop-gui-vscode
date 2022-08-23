@@ -43,6 +43,29 @@ export default class Utils {
         return clArgs
     }
 
+    static async handleScriptPath(context): Promise<string> {
+        const stateManager = new StateManager(context)
+
+        const existingPath = stateManager.read('scriptPath')
+        const value = existingPath ? existingPath : ''
+
+        const scriptPath = await vscode.window.showInputBox({
+            value: value,
+            prompt: 'Please enter the path to the script (This extension expects a FileMapping.txt and ranked_patterns.txt inside a discopop_tmp folder to work): ',
+        })
+
+        if (!scriptPath?.length) {
+            vscode.window.showErrorMessage(
+                'You need to specify a path to the script'
+            )
+            return
+        }
+
+        stateManager.save('scriptPath', scriptPath)
+
+        return scriptPath
+    }
+
     public static getIcon(item: TreeItem, context): any {
         const nodeType = item.contextValue
         if (nodeType === ItemType.File && item.active) {

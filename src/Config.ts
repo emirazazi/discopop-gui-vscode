@@ -43,4 +43,8 @@ export class Config {
     public static codeLensEnabled: boolean = vscode.workspace
         .getConfiguration('discopop')
         .get('recommendationsCodeLens', true)
+
+    public static scriptModeEnabled: boolean = vscode.workspace
+        .getConfiguration('discopop')
+        .get('scriptModeEnabled', true)
 }
