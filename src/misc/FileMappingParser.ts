@@ -54,7 +54,6 @@ export default function parseMappingToTree(fileMapping: string, context: any): T
 
         // CLEAR ALL PATH STATES TO EMPTY CODELENSES
         const stateManager = new StateManager(context)
-        console.log("clearing " + path)
         stateManager.save(path, JSON.stringify([]))
 
         path = TreeUtils.removeAbsoluteSubpath(path)

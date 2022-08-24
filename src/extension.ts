@@ -143,11 +143,13 @@ export function activate(context: vscode.ExtensionContext) {
             Commands.refreshFileMapping,
             async () => {
                 codeLensProvider.hideCodeLenses()
+                const stateManager = new StateManager(context)
+                stateManager.save('tree', "")
 
                 if (Config.scriptModeEnabled) {
                     if (
                         fs.existsSync(
-                            `${Utils.getWorkspacePath}/discopop_tmp/FileMapping.txt`
+                            `${Utils.getWorkspacePath()}/discopop_tmp/FileMapping.txt`
                         )
                     ) {
                         const workspaceSM = new StorageManager(context, true)
@@ -156,7 +158,6 @@ export function activate(context: vscode.ExtensionContext) {
                             true
                         )) as string
 
-                        const stateManager = new StateManager(context)
                         stateManager.save('fileMapping', newFileMapping)
                         treeDataProvider.reloadFileMappingFromState()
                     }
@@ -172,7 +173,6 @@ export function activate(context: vscode.ExtensionContext) {
                             true
                         )) as string
 
-                        const stateManager = new StateManager(context)
                         stateManager.save('fileMapping', newFileMapping)
                         treeDataProvider.reloadFileMappingFromState()
                     }

@@ -163,12 +163,16 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     public loadTreeFromState(): boolean {
         const stateManager = new StateManager(this._context)
 
-        const loadedTree = JSON.parse(stateManager.read('tree'))
+        const retrieved = stateManager.read('tree')
 
-        if (loadedTree) {
-            this.data = loadedTree
-            this._onDidChangeTreeData.fire()
-            return true
+        if (retrieved && retrieved.length) {
+            const loadedTree = JSON.parse(retrieved)
+
+            if (loadedTree) {
+                this.data = loadedTree
+                this._onDidChangeTreeData.fire()
+                return true
+            }
         }
 
         return false
@@ -213,11 +217,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     }
 
     public moveOtherRecommendations(recommendationId, fileId, startLine, resultType) {
-        console.log(`fileId: ${fileId}`)
-        console.log(this.data)
         const item = TreeUtils.getChildById(this.data, fileId.toString())
-
-        console.log(item)
 
         item.children = item.children.map((result) => {
             if (result.resultIdentifier !== recommendationId && result.startLine > startLine) {

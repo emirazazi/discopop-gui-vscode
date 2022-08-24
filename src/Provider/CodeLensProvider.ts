@@ -53,7 +53,6 @@ export default class CodeLensProvider implements vscode.CodeLensProvider {
     ): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
         if (Config.codeLensEnabled && !this.hidden) {
             const stateManager = new StateManager(this.context)
-            console.log("READING " + document.fileName.toString())
             const ids = stateManager.read(document.fileName.toString())
 
             if (!ids) {
