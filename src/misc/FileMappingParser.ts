@@ -5,6 +5,7 @@ import { Config } from '../Config'
 import { TreeItem } from '../Provider/TreeDataProvider'
 import { ItemType } from '../ItemType'
 import { TreeUtils } from '../TreeUtils'
+import { StateManager } from './StateManager'
 
 function createNode(tree: TreeItem[], filePath: string[], id: string) {
     let label = filePath.shift()
@@ -42,7 +43,7 @@ function getFileName(label: string) {
     return path.parse(label).name
 }
 
-export default function parseMappingToTree(fileMapping: string): TreeItem {
+export default function parseMappingToTree(fileMapping: string, context: any): TreeItem {
     const lines = fileMapping.split('\n').filter((line) => line !== '')
 
     let tree: TreeItem[] = []
@@ -51,7 +52,14 @@ export default function parseMappingToTree(fileMapping: string): TreeItem {
         const lineArr = line.split('\t')
         let [id, path] = lineArr
 
+        // CLEAR ALL PATH STATES TO EMPTY CODELENSES
+        const stateManager = new StateManager(context)
+        console.log("clearing " + path)
+        stateManager.save(path, JSON.stringify([]))
+
         path = TreeUtils.removeAbsoluteSubpath(path)
+    
+    
         const split = path.split('/')
 
         createNode(tree, split, id)
