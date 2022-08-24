@@ -33,6 +33,9 @@ export class RedOp extends TaskExecuter {
     }
 
     async runTask(file, options) {
+        if (file.path.endsWith('.h')) {
+            return
+        }
         console.log('Instrumenting RedOp...')
         // $CLANG -g -O0 -S -emit-llvm -fno-discard-value-names \
         // -Xclang -load -Xclang ${DISCOPOP_BUILD}/libi/LLVMDPReduction.so \

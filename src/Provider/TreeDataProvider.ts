@@ -114,6 +114,32 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
         return res
     }
 
+    public filterExecutableFiles(node, root, arr) {
+        if (node.id) {
+            arr.push({
+                id: node.id,
+                path: TreeUtils.getPathById(this.data.children, node.id, root),
+                name: node.name,
+            })
+        }
+        if (node.children) {
+            node.children.map((children) =>
+                this.filterExecutableFiles(children, root, arr)
+            )
+        }
+        return
+    }
+
+    public getExecutableFiles() {
+        let root = vscode.workspace.workspaceFolders[0].uri.fsPath
+        let res = []
+        this.data.children.map((node) =>
+            this.filterExecutableFiles(node, root, res)
+        )
+
+        return res
+    }
+
     public forceTreeState(treeRoot) {
         this.data = treeRoot
         const stateManager = new StateManager(this._context)

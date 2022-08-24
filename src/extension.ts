@@ -195,7 +195,7 @@ export function activate(context: vscode.ExtensionContext) {
                     progress.report({ increment: 0 })
 
                     const cugenRunner = new CUGen(context)
-                    const files = treeDataProvider.getActiveFiles()
+                    const files = treeDataProvider.getExecutableFiles()
                     if (!files || !files?.length) {
                         vscode.window.showInformationMessage(
                             'Please select at least one file before executing a task!'
@@ -225,7 +225,7 @@ export function activate(context: vscode.ExtensionContext) {
 
                     const depprofRunner = new DepProfiling(context)
 
-                    const files = treeDataProvider.getActiveFiles()
+                    const files = treeDataProvider.getExecutableFiles()
                     if (!files || !files?.length) {
                         vscode.window.showInformationMessage(
                             'Please select at least one file before executing a task!'
@@ -257,7 +257,7 @@ export function activate(context: vscode.ExtensionContext) {
 
                     const redopRunner = new RedOp(context)
 
-                    const files = treeDataProvider.getActiveFiles()
+                    const files = treeDataProvider.getExecutableFiles()
                     if (!files || !files?.length) {
                         vscode.window.showInformationMessage(
                             'Please select at least one file before executing a task!'
@@ -358,7 +358,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(Commands.executeAll, async () => {
             // CUGEN
             const cugenRunner = new CUGen(context)
-            const files = treeDataProvider.getActiveFiles()
+            const files = treeDataProvider.getExecutableFiles()
             if (!files || !files?.length) {
                 vscode.window.showInformationMessage(
                     'Please select at least one file before executing a task!'

@@ -106,7 +106,7 @@ export default class DiscoPoPParser {
     }
 
     private appendResultsToTree = (root: TreeItem) => {
-        if (root.id && this.results[root.id]?.children?.length > 0) {
+        if (root.id && root.active && this.results[root.id]?.children?.length > 0) {
             this.saveIdsToStateManagerToRetrieveInCodeLensProvider(root)
 
             root.children = this.results[root.id].children
