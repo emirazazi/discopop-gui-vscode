@@ -308,12 +308,28 @@ export function activate(context: vscode.ExtensionContext) {
             Commands.applyResultsToTreeView,
             async () => {
                 detailViewProvider.clearView()
+
                 const parser = new DiscoPoPParser(context, treeDataProvider)
 
                 await parser.parseResultString()
             }
         )
     )
+
+    // JUST PARSE RESULTS
+    context.subscriptions.push(vscode.commands.registerCommand(Commands.parseResults, async () => {
+            detailViewProvider.clearView()
+
+            // Refresh file mapping here to apply results correctly to the tree view
+            vscode.commands.executeCommand(Commands.refreshFileMapping)
+
+            // Can't build codelenses without paths retrieved by treeDataProvider
+            vscode.commands.executeCommand(Commands.applyResultsToTreeView)
+
+            codeLensProvider.unhideCodeLenses()
+            codeLensProvider._onDidChangeCodeLenses.fire()
+        }
+    ))
 
     // EXECUTE BY SCRIPT
     context.subscriptions.push(

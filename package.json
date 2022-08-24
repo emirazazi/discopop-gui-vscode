@@ -147,6 +147,11 @@
                 "title": "Execute By Script",
                 "command": "discopop.executeByScript",
                 "category": "DiscoPoP"
+            },
+            {
+                "title": "Parse Results",
+                "command": "discopop.parseResults",
+                "category": "DiscoPoP"
             }
         ],
         "menus": {

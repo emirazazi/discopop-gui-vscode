@@ -15,6 +15,8 @@ export class Commands {
 
     public static executeByScript: string = 'discopop.executeByScript'
 
+    public static parseResults: string = 'discopop.parseResults'
+
     public static applyResultsToTreeView: string =
         'discopop.applyResultsToTreeView'
 

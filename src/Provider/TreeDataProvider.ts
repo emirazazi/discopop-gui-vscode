@@ -44,7 +44,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
             vscode.workspace.workspaceFolders.length > 0
                 ? vscode.workspace.workspaceFolders[0].uri.fsPath
                 : undefined
-        this.data = parseMappingToTree(fileMapping)
+        this.data = parseMappingToTree(fileMapping, this._context)
     }
 
     getTreeItem(
@@ -192,7 +192,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     }
 
     setFileMapping(fileMapping: string) {
-        this.data = parseMappingToTree(fileMapping)
+        this.data = parseMappingToTree(fileMapping, this._context)
         this.saveTreeToStateAndRefresh()
     }
 

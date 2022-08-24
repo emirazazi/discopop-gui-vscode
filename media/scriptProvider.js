@@ -11,6 +11,10 @@
         onExecuteScript();
     })
 
+    document.querySelector('.parse-results').addEventListener('click', () => {
+        onExecuteParseResults();
+    })
+
     // Handle messages sent from the extension to the webview
     window.addEventListener('message', event => {
         const message = event.data; // The json data that the extension sent
@@ -26,6 +30,10 @@
 
     function onExecuteScript() {
         vscode.postMessage({type: 'executeScript'})
+    }
+
+    function onExecuteParseResults() {
+        vscode.postMessage({type: 'parseResults'})
     }
 
     function showDone() {

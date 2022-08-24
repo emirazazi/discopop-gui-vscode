@@ -46,6 +46,10 @@ export class ScriptProvider implements vscode.WebviewViewProvider {
                     vscode.commands.executeCommand(Commands.executeByScript)
                     break
                 }
+                case 'parseResults': {
+                    vscode.commands.executeCommand(Commands.parseResults)
+                    break
+                }
             }
         })
     }
@@ -91,6 +95,9 @@ export class ScriptProvider implements vscode.WebviewViewProvider {
             <body>
                 <div>
                     <button class="execute-script">Execute Script</button>
+                </div>
+                <div>
+                    <button class="parse-results">Only Parse Results</button>
                 </div>
                 
                 <script nonce="${nonce}" src="${scriptUri}"></script>
