@@ -59,12 +59,12 @@
                 "discopop.clang": {
                     "type": "string",
                     "default": "",
-                    "description": "The build path to clang v8."
+                    "description": "The build path to clang."
                 },
                 "discopop.clangPP": {
                     "type": "string",
                     "default": "",
-                    "description": "The build path to clang++ v8."
+                    "description": "The build path to clang++."
                 },
                 "discopop.recommendationsCodeLens": {
                     "type": "boolean",
