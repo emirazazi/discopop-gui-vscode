@@ -3,7 +3,7 @@
     "displayName": "discopop-gui",
     "description": "An extension for the Parallelism Discovery tool DiscoPoP.",
     "author": "Emir Azazi",
-    "version": "0.0.6",
+    "version": "1.0.0",
     "publisher": "easoqi",
     "repository": {
         "type": "git",

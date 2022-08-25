@@ -13,6 +13,12 @@ After changing settings a reload of the extension is required -> ctrl/cmd + shif
 
 ## Release Notes
 
+### 1.0
+
+Fixed script mode only execution
+
+Adjusted file selection behaviour to include all files for execution but only display selected files
+
 ### 0.0.6
 
 Option to set `workspacePath/discopop_tmp` folder als CWD
