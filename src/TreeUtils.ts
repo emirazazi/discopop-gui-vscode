@@ -28,7 +28,7 @@ export class TreeUtils {
         })
         if (idx < 0) {
             for (const node of tree) {
-                if (node.children) {
+                if (node.children?.length) {
                     if (node.label) {
                         path += '/' + node.label
                     }
