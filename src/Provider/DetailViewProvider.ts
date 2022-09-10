@@ -146,7 +146,7 @@ export class DetailViewProvider implements vscode.WebviewViewProvider {
           <td>${doAll.resultType}</td>
         </tr>
         <tr>
-          <th>No Clue:</th>
+          <th>Line:</th>
           <td>${doAll.line}</td>
         </tr>
         <tr>
@@ -204,7 +204,7 @@ export class DetailViewProvider implements vscode.WebviewViewProvider {
           <td>${reduction.resultType}</td>
         </tr>
         <tr>
-        <th>No Clue:</th>
+        <th>Line:</th>
         <td>${reduction.line}</td>
         </tr>
         <tr>
