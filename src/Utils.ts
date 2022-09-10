@@ -108,10 +108,10 @@ export default class Utils {
 
     public static getResultLabel(resultType: ResultType, line) {
         if (resultType === ResultType.DoAll) {
-            return `DOALL AT ${line}`
+            return `DOALL AT L. ${line}`
         }
         if (resultType === ResultType.Reduction) {
-            return `REDUCTION AT ${line}`
+            return `REDUCTION AT L. ${line}`
         }
     }
 }

@@ -119,7 +119,7 @@
             },
             {
                 "command": "discopop.toggleEntry",
-                "title": "Edit",
+                "title": "Toggle File",
                 "icon": {
                     "light": "media/toggle.svg",
                     "dark": "media/toggle.svg"
@@ -127,7 +127,7 @@
             },
             {
                 "command": "discopop.toggleFolder",
-                "title": "Edit",
+                "title": "Toggle Folder",
                 "icon": {
                     "light": "media/toggle.svg",
                     "dark": "media/toggle.svg"
