@@ -59,12 +59,12 @@
                 "discopop.clang": {
                     "type": "string",
                     "default": "",
-                    "description": "The build path to clang."
+                    "description": "The path to clang."
                 },
                 "discopop.clangPP": {
                     "type": "string",
                     "default": "",
-                    "description": "The build path to clang++."
+                    "description": "The path to clang++."
                 },
                 "discopop.recommendationsCodeLens": {
                     "type": "boolean",
@@ -72,7 +72,8 @@
                 },
                 "discopop.scriptModeEnabled": {
                     "type": "boolean",
-                    "default": false
+                    "default": false,
+                    "description": "If this option is enabled, the extension expects the results of the DiscoPoP execution in your project to be in a discopop_tmp folder"
                 },
                 "discopop.cwdWorkspace": {
                     "type": "boolean",
