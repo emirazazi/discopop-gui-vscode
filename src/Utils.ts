@@ -36,12 +36,12 @@ export default class Utils {
 
         const clArgs = await vscode.window.showInputBox({
             value: value,
-            prompt: 'Please enter the command line arguments: ',
+            prompt: 'Please enter the command line arguments (optional): ',
         })
 
         if (!clArgs?.length) {
             vscode.window.showInformationMessage(
-                'Executing with DiscoPoP default command line arguments!'
+                'Executing without command line arguments!'
             )
         }
 
